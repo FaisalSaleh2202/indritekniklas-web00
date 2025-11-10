@@ -14,7 +14,7 @@ import { useState } from "react";
 export function NavigationMenuDemo() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
-    <nav className="bg-full font-sans bg-[#171717] sticky top-0 ">
+    <nav className="bg-full font-sans bg-[#171717] sticky top-0 z-60 ">
       <div className="flex text-white items-center px-6 md:px-8 py-2 justify-between">
         <div className="">Indri Teknik Las</div>
         <div className="hidden md:block">
@@ -75,13 +75,12 @@ export function NavigationMenuDemo() {
 
           {/* Overlay menu mobile */}
           <div
-            className={`md:hidden fixed left-0 right-0 bg-white text-black transition-all duration-500 ease-in-out overflow-hidden z-40 ${
-              isMenuOpen
-                ? "top-[56px] h-screen opacity-100"
-                : "top-[56px] h-0 opacity-0"
+            className={`md:hidden fixed inset-0 bg-white text-black transition-all duration-500 ease-in-out z-40 ${
+              isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
             }`}
+            style={{ marginTop: "45px" }} // biar mulai di bawah header
           >
-            <div className="flex flex-col items-center gap-6 mt-8 text-lg font-medium">
+            <div className="fixed inset-0 top-[45px] bg-white flex flex-col items-center justify-center gap-6 text-lg font-medium z-40">
               <a href="#">Beranda</a>
               <a href="#">Layanan</a>
               <a href="#">Kontak</a>

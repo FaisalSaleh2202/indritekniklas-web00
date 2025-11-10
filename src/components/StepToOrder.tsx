@@ -22,7 +22,7 @@ const steps = [
 export default function StepToOrder() {
   return (
     <>
-      <section className="py-6">
+      <section className="py-6 z-40">
         <h2 className="text-center py-6">Proses Pemesanan</h2>
         <div className="flex items-center justify-center">
           <Stepper
