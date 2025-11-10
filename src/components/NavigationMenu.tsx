@@ -1,220 +1,95 @@
 "use client";
-
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
-import Link from "next/link";
-import * as React from "react";
-
+import { Button } from "@/components/ui/button";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-];
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export function NavigationMenuDemo() {
-  const isMobile = useIsMobile();
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
-    <div className="bg-full bg-black sticky top-0 z-50">
-      <NavigationMenu className="px-4" viewport={isMobile}>
-        <NavigationMenuList className="flex-wrap p-2">
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Home update</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <a
-                      className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md md:p-6"
-                      href="/"
-                    >
-                      <div className="mb-2 text-lg font-medium sm:mt-4">
-                        shadcn/ui
-                      </div>
-                      <p className="text-muted-foreground text-sm leading-tight">
-                        Beautifully designed components built with Tailwind CSS.
-                      </p>
-                    </a>
-                  </NavigationMenuLink>
-                </li>
-                <ListItem href="/docs" title="Introduction">
-                  Re-usable components built using Radix UI and Tailwind CSS.
-                </ListItem>
-                <ListItem href="/docs/installation" title="Installation">
-                  How to install dependencies and structure your app.
-                </ListItem>
-                <ListItem href="/docs/primitives/typography" title="Typography">
-                  Styles for headings, paragraphs, lists...etc
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                {components.map((component) => (
-                  <ListItem
-                    key={component.title}
-                    title={component.title}
-                    href={component.href}
-                  >
-                    {component.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
+    <nav className="bg-full font-sans bg-[#171717] sticky top-0 ">
+      <div className="flex text-white items-center px-6 md:px-8 py-2 justify-between">
+        <div className="">Indri Teknik Las</div>
+        <div className="hidden md:block">
+          <ul className="flex items-center gap-8">
+            <li>Beranda</li>
+            <li>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="p-0" asChild>
+                  <Button>
+                    Layanan <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-4 mt-1" align="start">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      Profile
+                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      Billing
+                      <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      Settings
+                      <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      Keyboard shortcuts
+                      <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </li>
+            <li>Kontak</li>
+            <li>Blog</li>
+          </ul>
+        </div>
+
+        <div className="md:hidden">
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-700 transition-all duration-300 ease-in-out"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <div
+              className={`transform transition-transform duration-300 ease-in-out ${
+                isMenuOpen ? "rotate-180 scale-110" : "rotate-0 scale-100"
+              }`}
             >
-              <Link href="/docs">Docs</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem className="hidden md:block">
-            <NavigationMenuTrigger>List</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[300px] gap-4">
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">
-                      <div className="font-medium">Components</div>
-                      <div className="text-muted-foreground">
-                        Browse all components in the library.
-                      </div>
-                    </Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">
-                      <div className="font-medium">Documentation</div>
-                      <div className="text-muted-foreground">
-                        Learn how to use the library.
-                      </div>
-                    </Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">
-                      <div className="font-medium">Blog</div>
-                      <div className="text-muted-foreground">
-                        Read our latest blog posts.
-                      </div>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem className="hidden md:block">
-            <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[200px] gap-4">
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">Components</Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">Documentation</Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#">Blocks</Link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem className="hidden md:block">
-            <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[200px] gap-4">
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link href="#" className="flex-row items-center gap-2">
-                      <CircleHelpIcon />
-                      Backlog
-                    </Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#" className="flex-row items-center gap-2">
-                      <CircleIcon />
-                      To Do
-                    </Link>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <Link href="#" className="flex-row items-center gap-2">
-                      <CircleCheckIcon />
-                      Done
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
-  );
-}
+              {isMenuOpen ? (
+                <X className="text-white" />
+              ) : (
+                <Menu className="text-white" />
+              )}
+            </div>
+          </button>
 
-function ListItem({
-  title,
-  children,
-  href,
-  ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
-  return (
-    <li {...props}>
-      <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-            {children}
-          </p>
-        </Link>
-      </NavigationMenuLink>
-    </li>
+          {/* Overlay menu mobile */}
+          <div
+            className={`md:hidden fixed left-0 right-0 bg-white text-black transition-all duration-500 ease-in-out overflow-hidden z-40 ${
+              isMenuOpen
+                ? "top-[56px] h-screen opacity-100"
+                : "top-[56px] h-0 opacity-0"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-6 mt-8 text-lg font-medium">
+              <a href="#">Beranda</a>
+              <a href="#">Layanan</a>
+              <a href="#">Kontak</a>
+              <a href="#">Blog</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 }
