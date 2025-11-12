@@ -8,10 +8,10 @@ export function AboutUsSection() {
       <section className="my-12">
         <h2>Tentang Kami</h2>
         <p>
-          <strong> Indri Teknik Las </strong> hadir sebagai solusi bengkel las
+          {/* <strong> Indri Teknik Las </strong> hadir sebagai solusi bengkel las
           terdekat dan terpercaya di wilayah Anda. Kami melayani segala
           kebutuhan konstruksi dan renovasi — mulai dari rumah tinggal, gedung
-          perkantoran, apartemen, hingga fasilitas umum
+          perkantoran, apartemen, hingga fasilitas umum */}
         </p>
         <Button className="my-3" variant="outline">
           Selengkapnya <ArrowRight />

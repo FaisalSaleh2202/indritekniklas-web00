@@ -1,3 +1,4 @@
+("");
 import { AboutUsSection } from "@/components/AboutUsSection";
 import Footer from "@/components/Footer";
 import { Hero1 } from "@/components/Hero";
@@ -11,14 +12,14 @@ export default async function Home() {
     <>
       <NavigationMenuDemo />
       <main>
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl">
+        <div className="mx-auto px-4 sm:px-6 py-6 max-w-7xl">
           <Hero1
             heading="Welcome"
             description="Explore our features."
             image={{ src: "/hero_img.png", alt: "Hero image" }}
           />
-          <AboutUsSection />
           <ServiceSection />
+          <AboutUsSection />
           <KeunggulanSection />
           <StepToOrder />
         </div>

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function ServiceSection() {
   return (
-    <section>
+    <section className="py-6">
       <h2>Layanan Kami</h2>
       <div className="grid lg:grid-cols-3 gap-4 py-4">
         <Card>
