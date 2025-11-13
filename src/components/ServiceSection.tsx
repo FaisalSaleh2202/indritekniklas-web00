@@ -3,15 +3,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion } from "framer-motion";
 
-const fadeUp = (delay: number) => ({
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { delay, duration: 0.6, ease: "easeOut" },
-  },
-});
-
 export function ServiceSection() {
   return (
     <section className="bg-gray-50 px-4 sm:px-6 py-6">
