@@ -97,7 +97,7 @@ export function NavigationMenuDemo() {
             <div className="flex flex-col items-start m-4 gap-2 text-lg font-medium h-full">
               <a href="#">Beranda</a>
               <Separator className="" />
-              <a href="#">
+              <div>
                 {/* MENU LAYANAN (dropdown seperti FAQ) */}
                 <div>
                   <button
@@ -126,7 +126,7 @@ export function NavigationMenuDemo() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
               <Separator className="" />
               <a href="#">Kontak</a>
               <Separator className="" />

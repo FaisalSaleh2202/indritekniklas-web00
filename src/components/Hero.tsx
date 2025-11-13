@@ -42,14 +42,14 @@ const Hero1 = ({
   },
 }: Hero1Props) => {
   return (
-    <section className="">
+    <section className="px-4 sm:px-6 py-6 ">
       <div className="">
-        <div className="grid items-center gap-6 lg:grid-cols-2">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="my-6 text-pretty text-4xl font-bold lg:text-4xl">
+        <div className="grid items-center gap-4 lg:grid-cols-2 ">
+          <div className="flex gap-6 flex-col items-center text-center lg:items-start lg:text-left">
+            <h1 className="text-[#171717] drop-shadow-lg text-4xl font-bold lg:text-5xl tracking-tight text-balance">
               Bengkel Las Terdekat & Berpengalaman
             </h1>
-            <p className="mb-8 max-w-xl lg:text-xl">
+            <p className="text-[#171717]-100/90 lg:text-xl max-w-xl">
               hadir sebagai solusi bengkel las terdekat dan terpercaya di
               wilayah Anda. Kami melayani segala kebutuhan konstruksi dan
               renovasi — mulai dari rumah tinggal, gedung perkantoran,
@@ -78,11 +78,11 @@ const Hero1 = ({
               )}
             </div>
           </div>
-          <img
+          {/* <img
             src={image.src}
             alt={image.alt}
             className="h-full w-full rounded-md object-cover"
-          />
+          /> */}
         </div>
       </div>
     </section>
