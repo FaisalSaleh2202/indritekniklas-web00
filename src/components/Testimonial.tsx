@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 
 export function Testimonial() {
   return (
-    <section className="px-2 sm:px-6 py-6 bg-gray-50">
+    <section className="px-2 py-6 bg-gray-50">
       <div className="w-full">
         <motion.h2
           initial={{ opacity: 0, y: 60 }}
@@ -30,9 +30,9 @@ export function Testimonial() {
           <Carousel className="w-full">
             <CarouselContent className="mb-4 ml-0 md:px-2">
               {Array.from({ length: 6 }).map((_, index) => (
-                <CarouselItem key={index} className="basis-full p-2">
+                <CarouselItem key={index} className="basis-full">
                   <Card className="h-full w-full shadow-md border border-gray-200">
-                    <CardContent className="md:grid grid-cols-12 gap-4 p-6 h-70">
+                    <CardContent className="md:grid grid-cols-12 gap-4 h-80">
                       <div className="col-span-4">FOTO</div>
                       <div className="col-span-8 grid">
                         <p>
