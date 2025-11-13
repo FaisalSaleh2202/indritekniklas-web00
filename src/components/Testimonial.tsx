@@ -13,14 +13,14 @@ import { motion } from "framer-motion";
 
 export function Testimonial() {
   return (
-    <section className="px-2 py-6 bg-gray-50">
+    <section className="px-2 sm:px-6 py-6 bg-gray-50">
       <div className="w-full">
         <motion.h2
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true, amount: 0.3 }}
-          className="text-3xl font-light text-[#171717] text-center"
+          className="text-3xl font-light text-[#171717] py-2 text-center"
         >
           Apa Kata Pelanggan Kami
         </motion.h2>
@@ -28,11 +28,11 @@ export function Testimonial() {
         <div className="relative">
           {/* Carousel utama */}
           <Carousel className="w-full">
-            <CarouselContent className="mb-4 ml-0 md:px-2">
+            <CarouselContent className="mb-4 ml-0">
               {Array.from({ length: 6 }).map((_, index) => (
-                <CarouselItem key={index} className="basis-full">
+                <CarouselItem key={index} className="basis-full p-2">
                   <Card className="h-full w-full shadow-md border border-gray-200">
-                    <CardContent className="md:grid grid-cols-12 gap-4 h-80">
+                    <CardContent className="md:grid grid-cols-12 gap-4 md:h-70 h-90">
                       <div className="col-span-4">FOTO</div>
                       <div className="col-span-8 grid">
                         <p>
