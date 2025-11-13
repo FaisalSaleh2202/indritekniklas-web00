@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -6,14 +8,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
 
 export function Testimonial() {
   return (
     <section className="px-2 sm:px-6 py-6 bg-gray-50">
-      <div className="w-full max-w-6xl mx-auto">
-        <h2 className="text-3xl font-light text-[#171717] text-center">
+      <div className="w-full">
+        <motion.h2
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="text-3xl font-light text-[#171717] text-center"
+        >
           Apa Kata Pelanggan Kami
-        </h2>
+        </motion.h2>
 
         <div className="relative">
           {/* Carousel utama */}
@@ -21,15 +31,20 @@ export function Testimonial() {
             <CarouselContent className="mb-4 ml-0 md:px-2">
               {Array.from({ length: 6 }).map((_, index) => (
                 <CarouselItem key={index} className="basis-full p-2">
-                  <Card className="h-full shadow-md border border-gray-200">
-                    <CardContent className="flex flex-col items-center justify-center p-6 h-full text-center">
-                      <p className="text-lg italic text-gray-700 mb-4">
-                        “Pelayanan cepat dan hasil las sangat rapi! Sangat
-                        direkomendasikan.”
-                      </p>
-                      <span className="font-semibold text-[#075E54]">
-                        Pelanggan {index + 1}
-                      </span>
+                  <Card className="h-full w-full shadow-md border border-gray-200">
+                    <CardContent className="md:grid grid-cols-12 gap-4 p-6 h-70">
+                      <div className="col-span-4">FOTO</div>
+                      <div className="col-span-8 grid">
+                        <p>
+                          Masya Allah terima kasih ya Pak sudah amanah dan
+                          kerjain canopy, railing tangga, besi tanaman, pintu
+                          tralis atap rumah saya 🙏
+                        </p>
+                        <span>ashri fajri</span>
+                        <span>Kanopi, Tangga</span>
+                        <span>Galaxy Bekasi</span>
+                        <Separator />
+                      </div>
                     </CardContent>
                   </Card>
                 </CarouselItem>

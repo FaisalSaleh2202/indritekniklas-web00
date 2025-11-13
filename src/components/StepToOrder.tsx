@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Stepper,
   StepperIndicator,
@@ -7,6 +9,7 @@ import {
   StepperTitle,
   StepperTrigger,
 } from "@/components/ui/stepper";
+import { motion } from "framer-motion";
 import { Check, LoaderCircleIcon } from "lucide-react";
 
 const steps = [
@@ -19,7 +22,13 @@ const steps = [
 export default function StepToOrder() {
   return (
     <>
-      <section className="px-4 sm:px-6 py-6 z-40">
+      <motion.section
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true, amount: 0.3 }}
+        className="px-4 bg-white sm:px-6 py-6 z-40"
+      >
         <div className="grid gap-6">
           <h2 className="text-3xl font-light text-[#171717] text-center">
             Proses Pemesanan
@@ -68,7 +77,7 @@ export default function StepToOrder() {
             </Stepper>
           </div>
         </div>
-      </section>
+      </motion.section>
     </>
   );
 }

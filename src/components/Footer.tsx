@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <span className="text-lg font-semibold">INDRI TEKNIK LAS</span>
+                <span className="text-lg font-light">Indri Teknik Las</span>
                 <div className="my-3">
                   <ButtonFooterGroup />
                 </div>
@@ -23,10 +23,16 @@ export default function Footer() {
 
               <div className="grid gap-3">
                 <h2 className="font-semibold">Layanan</h2>
-                <ul className="grid gap-2">
-                  <li>Pagar</li>
-                  <li>Kanopi</li>
-                  <li>Tangga</li>
+                <ul className="grid gap-3">
+                  <li>
+                    <a href="#">Pagar</a>
+                  </li>
+                  <li>
+                    <a href="#">Kanopi</a>
+                  </li>
+                  <li>
+                    <a href="#">Tangga</a>
+                  </li>
                 </ul>
               </div>
             </div>

@@ -1,13 +1,38 @@
+"use client";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { motion } from "framer-motion";
+
+const fadeUp = (delay: number) => ({
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.6, ease: "easeOut" },
+  },
+});
 
 export function ServiceSection() {
   return (
     <section className="bg-gray-50 px-4 sm:px-6 py-6">
       <div className="">
-        <h2 className="text-3xl font-light text-[#171717] text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="text-3xl font-light text-[#171717] text-center mb-8 tracking-wide"
+        >
           Layanan Kami
-        </h2>
-        <div className="grid lg:grid-cols-3 gap-4 py-4">
+        </motion.h2>
+
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="grid lg:grid-cols-3 gap-4 py-4"
+        >
           <Card>
             <CardHeader>Kanopi</CardHeader>
             <CardContent>Image</CardContent>
@@ -32,7 +57,7 @@ export function ServiceSection() {
             <CardHeader>Kanopi</CardHeader>
             <CardContent>Image</CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

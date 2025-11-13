@@ -1,8 +1,17 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { CalendarCheck2, ShieldCheck, Wrench } from "lucide-react";
 
 export function AboutUsSection() {
   return (
-    <section className="px-4 sm:px-6 py-12 bg-[#212121] grid gap-3">
+    <motion.section
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, amount: 0.3 }}
+      className="px-4 sm:px-6 py-12 bg-[#212121] grid gap-3"
+    >
       <h2 className="text-3xl font-light text-white text-start">
         Tentang Kami
       </h2>
@@ -53,6 +62,6 @@ export function AboutUsSection() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

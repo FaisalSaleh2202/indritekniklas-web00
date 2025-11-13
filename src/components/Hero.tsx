@@ -28,7 +28,7 @@ const Hero1 = ({
   description = "Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.",
   buttons = {
     primary: {
-      text: "Konsultasi Sekarang",
+      text: "Tanyakan Kebutuhan Anda Sekarang",
       url: "https://www.shadcnblocks.com",
     },
     secondary: {
@@ -46,10 +46,10 @@ const Hero1 = ({
       <div className="">
         <div className="grid items-center gap-4 lg:grid-cols-2 ">
           <div className="flex gap-4 flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="text-[#171717] drop-shadow-lg text-3xl font-semibold lg:text-3xl tracking-tight text-balance">
+            <h1 className="text-[#171717] drop-shadow-sm text-3xl font-semibold lg:text-3xl tracking-tight text-balance">
               Bengkel Las Terdekat & Berpengalaman
             </h1>
-            <p className="text-[#171717]-100/90 lg:text-xl max-w-xl">
+            <p className="text-gray-900/80 text-xl max-w-xl">
               Hadir sebagai solusi bengkel las terdekat dan terpercaya di
               wilayah Anda. Kami melayani segala kebutuhan konstruksi dan
               renovasi — mulai dari rumah tinggal, gedung perkantoran,
@@ -60,11 +60,11 @@ const Hero1 = ({
                 <Button
                   asChild
                   className="w-auto p-6"
-                  style={{ backgroundColor: "#075E54" }}
+                  style={{ backgroundColor: "#075E54", fontSize: "16px" }}
                 >
                   <a href={buttons.primary.url}>
                     {buttons.primary.text}
-                    <Phone className="size-4" />
+                    <Phone className="size-5" />
                   </a>
                 </Button>
               )}
