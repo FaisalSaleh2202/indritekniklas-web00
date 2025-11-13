@@ -1,4 +1,3 @@
-("");
 import { AboutUsSection } from "@/components/AboutUsSection";
 import Footer from "@/components/Footer";
 import { Hero1 } from "@/components/Hero";
