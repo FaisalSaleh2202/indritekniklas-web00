@@ -1,4 +1,4 @@
-import { ArrowRight, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -45,12 +45,12 @@ const Hero1 = ({
     <section className="px-4 sm:px-6 py-6 ">
       <div className="">
         <div className="grid items-center gap-4 lg:grid-cols-2 ">
-          <div className="flex gap-6 flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="text-[#171717] drop-shadow-lg text-4xl font-bold lg:text-5xl tracking-tight text-balance">
+          <div className="flex gap-4 flex-col items-center text-center lg:items-start lg:text-left">
+            <h1 className="text-[#171717] drop-shadow-lg text-3xl font-semibold lg:text-3xl tracking-tight text-balance">
               Bengkel Las Terdekat & Berpengalaman
             </h1>
             <p className="text-[#171717]-100/90 lg:text-xl max-w-xl">
-              hadir sebagai solusi bengkel las terdekat dan terpercaya di
+              Hadir sebagai solusi bengkel las terdekat dan terpercaya di
               wilayah Anda. Kami melayani segala kebutuhan konstruksi dan
               renovasi — mulai dari rumah tinggal, gedung perkantoran,
               apartemen, hingga fasilitas umum
@@ -59,20 +59,12 @@ const Hero1 = ({
               {buttons.primary && (
                 <Button
                   asChild
-                  className="w-full sm:w-auto"
+                  className="w-auto"
                   style={{ backgroundColor: "#075E54" }}
                 >
                   <a href={buttons.primary.url}>
                     {buttons.primary.text}
                     <Phone className="size-4" />
-                  </a>
-                </Button>
-              )}
-              {buttons.secondary && (
-                <Button asChild variant="outline" className="w-full sm:w-auto">
-                  <a href={buttons.secondary.url}>
-                    {buttons.secondary.text}
-                    <ArrowRight className="size-4" />
                   </a>
                 </Button>
               )}

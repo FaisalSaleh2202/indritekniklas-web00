@@ -1,7 +1,6 @@
 import {
   Stepper,
   StepperContent,
-  StepperDescription,
   StepperIndicator,
   StepperItem,
   StepperNav,
@@ -22,9 +21,9 @@ const steps = [
 export default function StepToOrder() {
   return (
     <>
-      <section className="py-6 z-40">
+      <section className="px-4 sm:px-6 py-6 z-40">
         <div className="grid gap-6">
-          <h2 className="text-3xl font-bold text-center text-[#171717]">
+          <h2 className="text-3xl font-light text-[#171717] text-center">
             Proses Pemesanan
           </h2>
           <div className="flex items-center justify-center">
@@ -51,9 +50,6 @@ export default function StepToOrder() {
                       </StepperIndicator>
                       <div className="mt-0.5 text-left">
                         <StepperTitle>{step.title}</StepperTitle>
-                        <StepperDescription>
-                          {step.description}
-                        </StepperDescription>
                       </div>
                     </StepperTrigger>
                     {index < steps.length - 1 && (

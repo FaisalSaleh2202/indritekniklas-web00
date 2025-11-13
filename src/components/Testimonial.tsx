@@ -9,21 +9,18 @@ import {
 
 export function Testimonial() {
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="px-2 sm:px-6 py-6 bg-gray-50">
       <div className="w-full max-w-6xl mx-auto">
-        <h2 className="text-center text-3xl font-bold text-[#171717] mb-8">
+        <h2 className="text-3xl font-light text-[#171717] text-center">
           Apa Kata Pelanggan Kami
         </h2>
 
         <div className="relative">
           {/* Carousel utama */}
           <Carousel className="w-full">
-            <CarouselContent className="mb-4 ml-0 px-2">
+            <CarouselContent className="mb-4 ml-0 md:px-2">
               {Array.from({ length: 6 }).map((_, index) => (
-                <CarouselItem
-                  key={index}
-                  className="basis-full sm:basis-1/2 p-2"
-                >
+                <CarouselItem key={index} className="basis-full p-2">
                   <Card className="h-full shadow-md border border-gray-200">
                     <CardContent className="flex flex-col items-center justify-center p-6 h-full text-center">
                       <p className="text-lg italic text-gray-700 mb-4">
