@@ -2,7 +2,7 @@ import { CalendarCheck2, ShieldCheck, Wrench } from "lucide-react";
 
 export function AboutUsSection() {
   return (
-    <section className="px-4 sm:px-6 py-6 bg-[#171717] grid gap-3">
+    <section className="px-4 sm:px-6 py-12 bg-[#212121] grid gap-3">
       <h2 className="text-3xl font-light text-white text-start">
         Tentang Kami
       </h2>

@@ -59,7 +59,7 @@ const Hero1 = ({
               {buttons.primary && (
                 <Button
                   asChild
-                  className="w-auto"
+                  className="w-auto p-6"
                   style={{ backgroundColor: "#075E54" }}
                 >
                   <a href={buttons.primary.url}>

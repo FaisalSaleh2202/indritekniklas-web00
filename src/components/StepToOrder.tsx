@@ -1,10 +1,8 @@
 import {
   Stepper,
-  StepperContent,
   StepperIndicator,
   StepperItem,
   StepperNav,
-  StepperPanel,
   StepperSeparator,
   StepperTitle,
   StepperTrigger,
@@ -49,7 +47,9 @@ export default function StepToOrder() {
                         {index + 1}
                       </StepperIndicator>
                       <div className="mt-0.5 text-left">
-                        <StepperTitle>{step.title}</StepperTitle>
+                        <StepperTitle className="text-lg">
+                          {step.title}
+                        </StepperTitle>
                       </div>
                     </StepperTrigger>
                     {index < steps.length - 1 && (
@@ -58,13 +58,13 @@ export default function StepToOrder() {
                   </StepperItem>
                 ))}
               </StepperNav>
-              <StepperPanel className="text-sm w-56 text-center">
+              {/* <StepperPanel className="text-sm w-56 text-center">
                 {steps.map((step, index) => (
                   <StepperContent key={index} value={index + 1}>
                     Step {step.title} content
                   </StepperContent>
                 ))}
-              </StepperPanel>
+              </StepperPanel> */}
             </Stepper>
           </div>
         </div>

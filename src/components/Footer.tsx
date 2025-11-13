@@ -9,7 +9,7 @@ import ButtonFooterGroup from "./ButtonFooterGroup";
 export default function Footer() {
   return (
     <>
-      <footer className="px-4 sm:px-6 py-6 mt-6 bg-[#171717] text-white">
+      <footer className="px-4 sm:px-6 py-6 mt-6 bg-[#212121] text-white">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-8">
           {/* Kolom kiri */}
           <div className="lg:col-span-4">
@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Kolom kanan */}
           <div className="lg:col-span-4">
             <h3 className="text-lg">FREQUENTLY ASKED QUESTION (F.A.Q)</h3>
-            <Accordion className="bg-[#171717]" type="single" collapsible>
+            <Accordion className="bg-[#212121]" type="single" collapsible>
               <AccordionItem value="item-1">
                 <AccordionTrigger>Is it accessible?</AccordionTrigger>
                 <AccordionContent>
