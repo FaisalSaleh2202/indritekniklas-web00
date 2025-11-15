@@ -12,11 +12,7 @@ export default async function Home() {
       <NavigationMenuDemo />
       <main>
         <div className="">
-          <Hero1
-            heading="Welcome"
-            description="Explore our features."
-            image={{ src: "/hero_img.png", alt: "Hero image" }}
-          />
+          <Hero1 heading="Welcome" description="Explore our features." />
           <ServiceSection />
           <AboutUsSection />
           {/* <KeunggulanSection /> */}

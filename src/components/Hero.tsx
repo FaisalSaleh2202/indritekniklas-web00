@@ -1,6 +1,6 @@
-import { Phone } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
+import { MessageCircle, Phone } from "lucide-react";
+import Image from "next/image";
 
 interface Hero1Props {
   badge?: string;
@@ -11,70 +11,106 @@ interface Hero1Props {
       text: string;
       url: string;
     };
-    secondary?: {
-      text: string;
-      url: string;
-    };
-  };
-  image: {
-    src: string;
-    alt: string;
   };
 }
 
 const Hero1 = ({
   badge = "✨ Your Website Builder",
-  heading = "Blocks Built With Shadcn & Tailwind",
-  description = "Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.",
+  heading = "Bengkel Las Terdekat & Berpengalaman",
+  description = "Hadir sebagai solusi bengkel las terdekat dan terpercaya di wilayah Anda. Kami melayani segala kebutuhan konstruksi dan renovasi — mulai dari rumah tinggal, gedung perkantoran, apartemen, hingga fasilitas umum.",
   buttons = {
     primary: {
       text: "Tanyakan Kebutuhan Anda Sekarang",
-      url: "https://www.shadcnblocks.com",
+      url: "#",
     },
-    secondary: {
-      text: "View on GitHub",
-      url: "https://www.shadcnblocks.com",
-    },
-  },
-  image = {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg",
-    alt: "Hero section demo image showing interface components",
   },
 }: Hero1Props) => {
   return (
-    <section className="px-4 sm:px-6 py-6 ">
-      <div className="">
-        <div className="grid items-center gap-4 lg:grid-cols-2 ">
-          <div className="flex gap-4 flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="text-[#171717] drop-shadow-sm text-3xl font-semibold lg:text-3xl tracking-tight text-balance">
-              Bengkel Las Terdekat & Berpengalaman
-            </h1>
-            <p className="text-gray-900/80 text-xl max-w-xl">
-              Hadir sebagai solusi bengkel las terdekat dan terpercaya di
-              wilayah Anda. Kami melayani segala kebutuhan konstruksi dan
-              renovasi — mulai dari rumah tinggal, gedung perkantoran,
-              apartemen, hingga fasilitas umum
-            </p>
-            <div className="flex w-full bg-red flex-col justify-center gap-2 sm:flex-row lg:justify-start">
-              {buttons.primary && (
-                <Button
-                  asChild
-                  className="w-auto p-6"
-                  style={{ backgroundColor: "#075E54", fontSize: "16px" }}
-                >
-                  <a href={buttons.primary.url}>
-                    {buttons.primary.text}
-                    <Phone className="size-5" />
-                  </a>
-                </Button>
-              )}
-            </div>
+    <section className="relative">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/hero/hero5.png" // 🔥 Ganti dengan background kamu
+          alt="background"
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
+
+      {/* Overlay Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/40"></div>
+
+      {/* CONTENT */}
+      <div className="relative z-20 px-4 sm:px-6 pt-6 pb-0 max-w-5xl mx-auto text-center">
+        <h1 className="text-4xl lg:text-4xl font-bold text-white leading-tight">
+          Bengkel Las <span className="text-[#E99C3D]">Terdekat</span> &
+          Berpengalaman
+        </h1>
+
+        <p className="text-gray-200 text-lg mt-4 max-w-2xl mx-auto">
+          Hadir sebagai solusi bengkel las terdekat dan terpercaya di wilayah
+          Anda. Kami melayani segala kebutuhan konstruksi dan renovasi — mulai
+          dari rumah tinggal, gedung perkantoran, apartemen, hingga fasilitas
+          umum
+        </p>
+
+        {/* BUTTON */}
+        <div className="mt-6">
+          <Button
+            asChild
+            className="w-auto py-5 px-6 rounded-full font-light shadow-xl inline-flex items-center gap-2"
+            style={{
+              backgroundColor: "#25D366",
+              color: "black",
+            }}
+          >
+            <a href="#">
+              Tanyakan Kebutuhan Anda Sekarang <Phone /> <MessageCircle />{" "}
+            </a>
+          </Button>
+        </div>
+      </div>
+
+      {/* IMAGES BELOW */}
+      <div className="relative z-20 mt-6 pb-8 max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Left Image */}
+        <div className="flex justify-center">
+          <div className="w-64 h-48 rounded-[2rem] overflow-hidden rotate-[-5deg] shadow-lg border-4 border-white">
+            <Image
+              src="/hero/hero2.jpg"
+              alt="worker"
+              width={500}
+              height={400}
+              className="object-cover w-full h-full"
+            />
           </div>
-          {/* <img
-            src={image.src}
-            alt={image.alt}
-            className="h-full w-full rounded-md object-cover"
-          /> */}
+        </div>
+
+        {/* Middle Image (Bigger) */}
+        <div className="flex justify-center">
+          <div className="w-72 h-56 rounded-[2rem] overflow-hidden shadow-xl border-4 border-white">
+            <Image
+              src="/hero/hero1.jpg"
+              alt="main"
+              width={600}
+              height={450}
+              className="object-cover w-full h-full"
+            />
+          </div>
+        </div>
+
+        {/* Right Image */}
+        <div className="flex justify-center">
+          <div className="w-64 h-48 rounded-[2rem] overflow-hidden rotate-[5deg] shadow-lg border-4 border-white">
+            <Image
+              src="/hero/hero4.jpg"
+              alt="worker"
+              width={500}
+              height={400}
+              className="object-cover w-full h-full"
+            />
+          </div>
         </div>
       </div>
     </section>

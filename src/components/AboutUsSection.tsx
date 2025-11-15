@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CalendarCheck2, ShieldCheck, Wrench } from "lucide-react";
 
 export function AboutUsSection() {
   return (
@@ -9,57 +8,44 @@ export function AboutUsSection() {
       initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true, amount: 0.3 }}
-      className="px-4 sm:px-6 py-12 bg-[#212121] grid gap-3"
+      viewport={{ once: true }}
+      className="px-4 sm:px-6 py-16 max-w-5xl mx-auto"
     >
-      <h2 className="text-3xl font-light text-white text-start">
+      {/* Title */}
+      <h2 className="text-center text-3xl md:text-4xl font-light text-[#171717] mb-6">
         Tentang Kami
       </h2>
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Kiri: Deskripsi */}
-        <div className="space-y-4 text-white text-lg leading-relaxed text-justify">
-          <p>
-            <strong>Indri Teknik Las</strong> adalah bengkel las profesional
-            yang berfokus pada pengerjaan konstruksi baja, kanopi, pagar,
-            tralis, dan berbagai proyek las lainnya. Kami telah melayani
-            pelanggan di berbagai wilayah dengan hasil yang rapi, kuat, dan
-            tahan lama.
-          </p>
-          <p className="text-justify">
-            Dengan pengalaman lebih dari satu dekade, kami berkomitmen
-            memberikan pelayanan terbaik menggunakan material berkualitas dan
-            tenaga ahli berpengalaman. Kepuasan pelanggan adalah prioritas utama
-            kami.
-          </p>
+
+      {/* Description */}
+      <p className="text-center text-lg text-[#171717] leading-relaxed max-w-3xl mx-auto mb-12">
+        Di <span className="font-semibold">Indri Teknik Las</span>, kami
+        berkomitmen memberikan layanan konstruksi las yang kuat, rapi, dan
+        berkualitas tinggi. Dengan pengalaman lebih dari satu dekade, kami telah
+        membantu ratusan pelanggan mewujudkan berbagai kebutuhan konstruksi
+        besi—mulai dari kanopi, pagar, tralis, hingga proyek custom sesuai
+        permintaan.
+      </p>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <h3 className="text-3xl font-semibold text-[#171717]">150+</h3>
+          <p className="text-sm text-gray-600">Proyek Selesai</p>
         </div>
 
-        {/* Kanan: Statistik / Keunggulan */}
-        <div className="grid mx-auto gap-10">
-          <div className="flex items-center gap-4">
-            <CalendarCheck2 className="w-12 h-12 bg-[#F4991A] text-white p-3 rounded-lg" />
-            <div>
-              <h3 className="text-2xl font-bold text-white">10+ Tahun</h3>
-              <p className="text-white">Pengalaman dalam pekerjaan las</p>
-            </div>
-          </div>
+        <div>
+          <h3 className="text-3xl font-semibold text-[#171717]">10+</h3>
+          <p className="text-sm text-gray-600">Tahun Pengalaman</p>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <ShieldCheck className="w-12 h-12 bg-[#F4991A] text-white p-3 rounded-lg" />
-            <div>
-              <h3 className="text-2xl font-bold text-white">
-                Material Berkualitas
-              </h3>
-              <p className="text-white">Mengutamakan kekuatan dan daya tahan</p>
-            </div>
-          </div>
+        <div>
+          <h3 className="text-3xl font-semibold text-[#171717]">200+</h3>
+          <p className="text-sm text-gray-600">Ulasan Pelanggan</p>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <Wrench className="w-12 h-12 bg-[#F4991A] text-white p-3 rounded-lg" />
-            <div>
-              <h3 className="text-2xl font-bold text-white">Tim Ahli</h3>
-              <p className="text-white">Dikerjakan oleh tenaga profesional</p>
-            </div>
-          </div>
+        <div>
+          <h3 className="text-3xl font-semibold text-[#171717]">30</h3>
+          <p className="text-sm text-gray-600">Proyek Custom</p>
         </div>
       </div>
     </motion.section>

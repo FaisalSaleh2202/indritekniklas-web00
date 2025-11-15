@@ -1,54 +1,81 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import Image from "next/image";
+
+const services = [
+  {
+    title: "Pagar",
+    price: "$45.99",
+    img: "/service/pagar.jpg",
+    rating: 5,
+  },
+  {
+    title: "Railing Dor",
+    price: "$49.99",
+    img: "/service/railingdor.jpg",
+    rating: 5,
+  },
+  {
+    title: "Pintu",
+    price: "$55.99",
+    img: "/service/pintu.jpg",
+    rating: 4.5,
+  },
+  {
+    title: "Tangga",
+    price: "$55.99",
+    img: "/service/tangga3.jpg",
+    rating: 4.5,
+  },
+  {
+    title: "Kanopi",
+    price: "$55.99",
+    img: "/service/kanopi.jpg",
+    rating: 4.5,
+  },
+];
 
 export function ServiceSection() {
   return (
-    <section className="bg-gray-50 px-4 sm:px-6 py-6">
-      <div className="">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, amount: 0.3 }}
-          className="text-3xl font-light text-[#171717] text-center mb-8 tracking-wide"
-        >
-          Layanan Kami
-        </motion.h2>
+    <section className="px-4 sm:px-6 py-12 bg-gray-50">
+      <motion.h2
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9 }}
+        viewport={{ once: true }}
+        className="text-3xl font-light text-[#171717] text-center mb-10"
+      >
+        Layanan Kami
+      </motion.h2>
 
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, amount: 0.3 }}
-          className="grid lg:grid-cols-3 gap-4 py-4"
-        >
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>Kanopi</CardHeader>
-            <CardContent>Image</CardContent>
-          </Card>
-        </motion.div>
+      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {services.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: i * 0.1 }}
+            viewport={{ once: true }}
+            className="bg-white shadow-sm p-3 relative"
+          >
+            {/* Card Image */}
+            <div className="bg-gradient-to-b from-white to-orange-50 p-4 mb-4">
+              <Image
+                src={item.img}
+                alt={item.title}
+                width={200}
+                height={200}
+                className="w-full object-contain"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-lg font-semibold mb-2 text-[#171717]">
+              {item.title}
+            </h3>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

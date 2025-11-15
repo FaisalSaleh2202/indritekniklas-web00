@@ -31,7 +31,7 @@ export function Testimonial() {
             <CarouselContent className="mb-4 ml-0">
               {Array.from({ length: 6 }).map((_, index) => (
                 <CarouselItem key={index} className="basis-full p-2">
-                  <Card className="h-90 w-full shadow-md border border-gray-200">
+                  <Card className="h-90 w-full shadow-md rounded-none">
                     <CardContent className="md:grid grid-cols-12">
                       <div className="col-span-4">FOTO</div>
                       <div className="col-span-8 grid">
