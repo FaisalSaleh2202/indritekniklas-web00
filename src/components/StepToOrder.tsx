@@ -42,11 +42,11 @@ export default function StepToOrder() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       viewport={{ once: true }}
-      className="px-4 sm:px-6 py-16 bg-white"
+      className="px-4 sm:px-6 py-6 bg-gray-50"
     >
-      <div className="grid md:grid-cols-2">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h2 className="text-4xl font-light text-[#171717] mb-4">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="max-w-4xl mx-auto text-center my-auto">
+          <h2 className="text-center text-2xl md:text-4xl font-light text-[#171717] mb-3">
             Proses Pemesanan
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
@@ -66,13 +66,13 @@ export default function StepToOrder() {
               loading: <LoaderCircleIcon className="size-4 animate-spin" />,
             }}
           >
-            <StepperNav className="relative ml-4">
+            <StepperNav className="relative mx-auto">
               {/* Garis Utama Timeline */}
               <div className="absolute top-0 left-3 h-full w-1 bg-gradient-to-b from-[#F7C77F] to-[#D67A00] opacity-40 rounded-full"></div>
 
               {steps.map((step, index) => (
                 <StepperItem key={index} step={index + 1} className="relative">
-                  <StepperTrigger className="flex items-start gap-4 pb-12 last:pb-0">
+                  <StepperTrigger className="flex items-start gap-4 pb-12 last:pb-6">
                     {/* Bulatan Indicator Elegan */}
                     <StepperIndicator
                       className="

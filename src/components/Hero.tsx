@@ -42,7 +42,7 @@ const Hero1 = ({
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/40"></div>
 
       {/* CONTENT */}
-      <div className="relative z-20 px-4 sm:px-6 pt-6 pb-0 max-w-5xl mx-auto text-center">
+      <div className="relative z-20 px-4 sm:px-6 py-12 pb-0 max-w-5xl mx-auto text-center">
         <h1 className="text-4xl lg:text-4xl font-bold text-white leading-tight">
           Bengkel Las <span className="text-[#E99C3D]">Terdekat</span> &
           Berpengalaman
@@ -73,7 +73,7 @@ const Hero1 = ({
       </div>
 
       {/* IMAGES BELOW */}
-      <div className="relative z-20 mt-6 pb-8 max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="relative z-20 mt-6 pb-12 max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
         {/* Left Image */}
         <div className="flex justify-center">
           <div className="w-64 h-48 rounded-[2rem] overflow-hidden rotate-[-5deg] shadow-lg border-4 border-white">
