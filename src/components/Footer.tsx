@@ -4,48 +4,140 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import ButtonFooterGroup from "./ButtonFooterGroup";
+import { MailCheck, MessageCircle, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
     <>
-      <footer className="px-4 sm:px-6 py-6 mt-6 bg-[#212121] text-white">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-8">
+      <footer className="px-4 sm:px-6 py-10 mt-10 bg-[#212121] text-white">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-8">
           {/* Kolom kiri */}
           <div className="lg:col-span-4">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <span className="text-lg font-light">Indri Teknik Las</span>
-                <div className="my-3">
-                  <ButtonFooterGroup />
+            <div className="grid gap-8 md:grid-cols-2">
+              {/* Info Brand */}
+              <div className="space-y-4">
+                <span className="text-xl font-light block">
+                  Indri Teknik Las
+                </span>
+
+                <div className="flex items-center gap-3">
+                  <p className="leading-relaxed">
+                    Kota Bekasi, Jawa Barat 17148 <br />
+                    jl.masjid jami nurul mutaqin, RT.03/RW.04, Pekayon Jaya,
+                    Kec. Bekasi Sel.,
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                    <Phone size={20} className="text-[#3B82F6]" />
+                  </div>
+                  <a href="#" className="hover:underline">
+                    081283993386
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                    <MessageCircle size={20} className="text-[#25D366]" />
+                  </div>
+                  <a href="#" className="hover:underline">
+                    081283993386
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                    <MailCheck size={20} className="text-[#EF4444]" />
+                  </div>
+                  <a href="#" className="hover:underline">
+                    081283993386
+                  </a>
                 </div>
               </div>
 
-              <div className="grid gap-3">
-                <h2 className="font-semibold">Layanan</h2>
-                <ul className="grid gap-3">
+              {/* Layanan */}
+              <div className="space-y-3">
+                <h2 className="font-semibold text-lg">Layanan</h2>
+                <ul className="space-y-2 text-base">
                   <li>
-                    <a href="#">Pagar</a>
+                    <a href="#" className="hover:underline">
+                      Pagar
+                    </a>
                   </li>
                   <li>
-                    <a href="#">Kanopi</a>
+                    <a href="#" className="hover:underline">
+                      Kanopi
+                    </a>
                   </li>
                   <li>
-                    <a href="#">Tangga</a>
+                    <a href="#" className="hover:underline">
+                      Tangga
+                    </a>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Kolom kanan */}
-          <div className="lg:col-span-4">
-            <h3 className="text-lg">FREQUENTLY ASKED QUESTION (F.A.Q)</h3>
-            <Accordion className="bg-[#212121]" type="single" collapsible>
+          {/* Kolom Kanan - FAQ */}
+          <div className="lg:col-span-4 space-y-4">
+            <h3 className="text-lg font-semibold">
+              FREQUENTLY ASKED QUESTION (F.A.Q)
+            </h3>
+
+            <Accordion
+              className="bg-[#212121] text-lg"
+              type="single"
+              collapsible
+              defaultValue="item-1"
+            >
               <AccordionItem value="item-1">
-                <AccordionTrigger>Is it accessible?</AccordionTrigger>
+                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+                  Apakah gratis ongkos kirim?
+                </AccordionTrigger>
                 <AccordionContent>
-                  Yes. It adheres to the WAI-ARIA design pattern.
+                  Ya, kami menyediakan gratis ongkir .
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4">
+                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+                  Apakah menerima custom desain?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Ya, kami bisa membuat sesuai desain dari pelanggan atau
+                  membantu membuatkan desain baru.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6">
+                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+                  Apakah menerima panggilan ke lokasi?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Ya, kami menyediakan jasa panggilan ke lokasi untuk survei
+                  maupun pengerjaan langsung.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-7">
+                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+                  Material apa saja yang tersedia?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Kami menyediakan besi hollow, besi siku, plat, stainless,
+                  galvanis, dan material lainnya.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-8">
+                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+                  Apakah harga bisa dinegosiasi?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Bisa. Harga disesuaikan dengan material, ukuran, tingkat
+                  kesulitan, dan anggaran pelanggan.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

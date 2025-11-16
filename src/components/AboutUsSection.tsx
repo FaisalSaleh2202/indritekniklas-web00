@@ -19,9 +19,9 @@ export function AboutUsSection() {
 
         {/* Description */}
         <p className="text-justify text-lg text-[#171717] leading-relaxed">
-          Di <span className="font-semibold">Indri Teknik Las</span>, kami
+          <span className="font-semibold">Indri Teknik Las</span>, kami
           berkomitmen memberikan layanan konstruksi las yang kuat, rapi. Dengan
-          pengalaman lebih dari satu dekade dan tenaga ahli berpengalaman, kami
+          pengalaman lebih dari 10 tahun dan tenaga ahli berpengalaman, kami
           telah membantu ratusan pelanggan mewujudkan berbagai kebutuhan
           konstruksi besi—mulai dari kanopi, pagar, tralis, hingga proyek custom
           sesuai permintaan.

@@ -46,7 +46,7 @@ export default function StepToOrder() {
     >
       <div className="grid md:grid-cols-2 gap-6">
         <div className="max-w-4xl mx-auto text-center my-auto">
-          <h2 className="text-center text-2xl md:text-4xl font-light text-[#171717] mb-3">
+          <h2 className="text-center text-2xl md:text-3xl font-light text-[#171717] mb-3">
             Proses Pemesanan
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
