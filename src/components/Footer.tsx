@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Mail, MessageCircle, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -19,40 +18,39 @@ export default function Footer() {
                 <span className="text-xl font-light block">
                   Indri Teknik Las
                 </span>
-
-                <div className="flex items-center gap-3">
-                  <p className="leading-relaxed">
-                    Kota Bekasi, Jawa Barat 17148 <br />
-                    jl.masjid jami nurul mutaqin, RT.03/RW.04, Pekayon Jaya,
-                    Kec. Bekasi Sel.,
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="">
-                    <Phone size={20} className="text-white" />
-                  </div>
-                  <a href="#" className="hover:underline">
-                    081283993386
-                  </a>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="">
-                    <MessageCircle size={20} className="" />
-                  </div>
-                  <a href="#" className="hover:underline">
-                    081283993386
-                  </a>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="">
-                    <Mail size={20} className="" />
-                  </div>
-                  <a href="#" className="hover:underline">
-                    indritekniklas@gmail.com
-                  </a>
+                <div className="">
+                  <ul className="space-y-4 text-base">
+                    <li>
+                      <strong>📍 Alamat:</strong>
+                      <br />
+                      Jl. Contoh No. 123, Jakarta
+                    </li>
+                    <li>
+                      <strong>📞 Telepon:</strong>
+                      <br />
+                      <a
+                        href="tel:+628123456789"
+                        className="text-blue-600 hover:underline"
+                      >
+                        +62 812-3456-789
+                      </a>
+                    </li>
+                    <li>
+                      <strong>✉ Email:</strong>
+                      <br />
+                      <a
+                        href="mailto:info@indritekniklas.com"
+                        className="text-blue-600 hover:underline"
+                      >
+                        info@indritekniklas.com
+                      </a>
+                    </li>
+                    <li>
+                      <strong>🕒 Jam Operasional:</strong>
+                      <br />
+                      Senin – Sabtu: 08.00 – 17.00
+                    </li>
+                  </ul>
                 </div>
               </div>
 

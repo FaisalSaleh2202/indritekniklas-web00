@@ -4,6 +4,12 @@ import { NavigationMenu } from "@/components/NavigationMenu";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
 export default function Page() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -11,25 +17,44 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setResult(null);
 
     try {
+      // INI BARIS PENTING: Ambil token reCAPTCHA v3
+      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+      if (!siteKey) {
+        throw new Error("reCAPTCHA Site Key tidak ditemukan");
+      }
+
+      const token = await window.grecaptcha.execute(siteKey, {
+        action: "submit_contact",
+      });
+
+      // Kirim token bersama data form
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, email, message }),
+        body: JSON.stringify({
+          firstName,
+          email,
+          message,
+          recaptchaToken: token, // ← tambah ini
+        }),
       });
 
       const data = await res.json();
       setResult(data);
     } catch (err: any) {
-      setResult({ success: false, error: err.message });
+      setResult({ success: false, error: "Gagal mengirim pesan" });
+    } finally {
+      setFirstName("");
+      setEmail("");
+      setMessage("");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -105,7 +130,7 @@ export default function Page() {
             </form>
 
             {/* Response */}
-            {result && (
+            {/* {result && (
               <div
                 className={`mt-6 p-4 rounded-lg text-sm border ${
                   result?.success
@@ -118,7 +143,7 @@ export default function Page() {
                   {JSON.stringify(result, null, 2)}
                 </pre>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* KONTAK & MAP */}
@@ -171,6 +196,8 @@ export default function Page() {
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3335.0052107805877!2d106.97829930899059!3d-6.262158714275422!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698de549e7328d%3A0x967837da2387e2d!2sIndri%20teknik%20las!5e0!3m2!1sen!2sid!4v1763817912270!5m2!1sen!2sid"
+                title="Lokasi Indri Teknik Las"
+                sandbox="allow-scripts allow-same-origin"
               ></iframe>
             </div>
           </div>

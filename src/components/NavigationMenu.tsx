@@ -18,7 +18,7 @@ export function NavigationMenu() {
   const [isLayananOpen, setIsLayananOpen] = useState(false);
 
   return (
-    <header className="bg-white sticky top-0 z-60">
+    <div className="bg-white sticky top-0 z-60">
       <nav
         className="font-sans border-b text-[#171717] px-6 md:px-8 py-2 flex items-center justify-between"
         aria-label="Navigasi Utama"
@@ -66,7 +66,7 @@ export function NavigationMenu() {
             </li>
 
             <li role="none">
-              <Link href="/contact-us" className="hover:underline">
+              <Link href="/kontak-kami" className="hover:underline">
                 Kontak
               </Link>
               {/* <a role="menuitem" href="#kontak" className="hover:underline">
@@ -133,9 +133,7 @@ export function NavigationMenu() {
             aria-label="Menu navigasi mobile"
           >
             <nav className="flex flex-col items-start m-4 gap-2 text-lg h-full">
-              <a href="/" className="py-2">
-                Beranda
-              </a>
+              <Link href="/">Beranda</Link>
               <Separator />
 
               {/* Dropdown Mobile */}
@@ -180,9 +178,7 @@ export function NavigationMenu() {
               </div>
 
               <Separator />
-              <a href="#kontak" className="py-2">
-                Kontak
-              </a>
+              <Link href="/kontak-kami">Kontak Kami</Link>
               <Separator />
               <a href="#blog" className="py-2">
                 Blog
@@ -192,6 +188,6 @@ export function NavigationMenu() {
           </aside>
         </div>
       </nav>
-    </header>
+    </div>
   );
 }
