@@ -19,7 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={roboto.className}>{children}</body>
+      <body className={roboto.className}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if (globalThis.window) window.__RADIX_DISABLE_HYDRATION__ = true;`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

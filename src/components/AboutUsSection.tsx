@@ -30,12 +30,12 @@ export function AboutUsSection() {
         {/* Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-2 gap-8 text-center mt-2">
           <div>
-            <h3 className="text-3xl font-semibold text-[#171717]">150+</h3>
+            <span className="text-3xl font-semibold text-[#171717]">150+</span>
             <p className="text-sm text-gray-600">Proyek Selesai</p>
           </div>
 
           <div>
-            <h3 className="text-3xl font-semibold text-[#171717]">10+</h3>
+            <span className="text-3xl font-semibold text-[#171717]">10+</span>
             <p className="text-sm text-gray-600">Tahun Pengalaman</p>
           </div>
         </div>

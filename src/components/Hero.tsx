@@ -15,23 +15,23 @@ interface Hero1Props {
 }
 
 const Hero1 = ({
-  badge = "✨ Your Website Builder",
+  badge = "✨ Solusi Bengkel Las Profesional",
   heading = "Bengkel Las Terdekat & Berpengalaman",
-  description = "Hadir sebagai solusi bengkel las terdekat dan terpercaya di wilayah Anda. Kami melayani segala kebutuhan konstruksi dan renovasi — mulai dari rumah tinggal, gedung perkantoran, apartemen, hingga fasilitas umum.",
+  description = "Kami menyediakan layanan las profesional untuk kebutuhan rumah, kantor, bangunan komersial, hingga proyek konstruksi skala besar. Dikerjakan oleh tenaga berpengalaman dengan hasil rapi, kuat, dan bergaransi.",
   buttons = {
     primary: {
       text: "Tanyakan Kebutuhan Anda Sekarang",
-      url: "#",
+      url: "#kontak",
     },
   },
 }: Hero1Props) => {
   return (
-    <section className="relative">
+    <section className="relative" aria-labelledby="hero-heading" role="banner">
       {/* Background Image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" aria-hidden="true">
         <Image
-          src="/hero/hero5.png" // 🔥 Ganti dengan background kamu
-          alt="background"
+          src="/hero/hero5.png"
+          alt="Latar belakang bengkel las"
           fill
           priority
           className="object-cover"
@@ -39,15 +39,25 @@ const Hero1 = ({
       </div>
 
       {/* Overlay Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/40"></div>
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/40"
+        aria-hidden="true"
+      ></div>
 
       {/* CONTENT */}
-      <div className="relative z-20 px-4 sm:px-6 py-12 pb-0 max-w-5xl mx-auto text-center">
-        <h1 className="text-4xl lg:text-4xl font-bold text-white leading-tight">
+      <div className="relative z-20 px-4 sm:px-6 py-8 pb-0 max-w-5xl mx-auto text-center">
+        {/* BADGE */}
+
+        {/* MAIN HEADING */}
+        <h1
+          id="hero-heading"
+          className="text-4xl lg:text-4xl font-bold text-white leading-tight mt-2"
+        >
           Bengkel Las <span className="text-[#E99C3D]">Terdekat</span> &
           Berpengalaman
         </h1>
 
+        {/* DESCRIPTION */}
         <p className="text-gray-200 text-lg mt-4 max-w-2xl mx-auto">
           Hadir sebagai solusi bengkel las terdekat dan terpercaya di wilayah
           Anda. Kami melayani segala kebutuhan konstruksi dan renovasi — mulai
@@ -65,53 +75,57 @@ const Hero1 = ({
               color: "black",
             }}
           >
-            <a href="#">
-              Tanyakan Kebutuhan Anda Sekarang <Phone /> <MessageCircle />{" "}
+            <a href={buttons.primary?.url} aria-label="Hubungi via WhatsApp">
+              {buttons.primary?.text} <Phone aria-hidden="true" />{" "}
+              <MessageCircle aria-hidden="true" />
             </a>
           </Button>
         </div>
       </div>
 
       {/* IMAGES BELOW */}
-      <div className="relative z-20 mt-6 pb-12 max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div
+        className="relative z-20 mt-6 pb-12 max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6"
+        aria-label="Contoh hasil pekerjaan"
+      >
         {/* Left Image */}
-        <div className="flex justify-center">
+        <figure className="flex justify-center">
           <div className="w-64 h-48 rounded-[2rem] overflow-hidden rotate-[-5deg] shadow-lg border-4 border-white">
             <Image
               src="/hero/hero2.jpg"
-              alt="worker"
+              alt="Hasil pemasangan Railing Tangga"
               width={500}
               height={400}
               className="object-cover w-full h-full"
             />
           </div>
-        </div>
+        </figure>
 
-        {/* Middle Image (Bigger) */}
-        <div className="flex justify-center">
+        {/* Middle Image */}
+        <figure className="flex justify-center">
           <div className="w-72 h-56 rounded-[2rem] overflow-hidden shadow-xl border-4 border-white">
             <Image
-              src="/hero/hero1.jpg"
-              alt="main"
+              src="/hero/hero6.jpg"
+              alt="Hasil pemasangan kanopi"
               width={600}
               height={450}
               className="object-cover w-full h-full"
             />
           </div>
-        </div>
+        </figure>
 
         {/* Right Image */}
-        <div className="flex justify-center">
+        <figure className="flex justify-center">
           <div className="w-64 h-48 rounded-[2rem] overflow-hidden rotate-[5deg] shadow-lg border-4 border-white">
             <Image
               src="/hero/hero4.jpg"
-              alt="worker"
+              alt="Proses pembuatan rangka besi oleh teknisi"
               width={500}
               height={400}
               className="object-cover w-full h-full"
             />
           </div>
-        </div>
+        </figure>
       </div>
     </section>
   );

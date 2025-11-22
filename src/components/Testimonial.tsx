@@ -89,8 +89,8 @@ export function Testimonial() {
 
           {/* NAVIGATION */}
           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-4">
-            <CarouselPrevious className="relative static bg-[#075E54] text-white hover:bg-[#064d44] rounded-full p-3 shadow-md" />
-            <CarouselNext className="relative static bg-[#075E54] text-white hover:bg-[#064d44] rounded-full p-3 shadow-md" />
+            <CarouselPrevious className="relative static bg-[#E99C3D] text-white hover:bg-[#E99C3D] rounded-full p-3 shadow-md" />
+            <CarouselNext className="relative static bg-[#E99C3D] text-white hover:bg-[#E99C3D] rounded-full p-3 shadow-md" />
           </div>
         </Carousel>
       </div>

@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { MailCheck, MessageCircle, Phone } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -29,8 +29,8 @@ export default function Footer() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
-                    <Phone size={20} className="text-[#3B82F6]" />
+                  <div className="">
+                    <Phone size={20} className="text-white" />
                   </div>
                   <a href="#" className="hover:underline">
                     081283993386
@@ -38,8 +38,8 @@ export default function Footer() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
-                    <MessageCircle size={20} className="text-[#25D366]" />
+                  <div className="">
+                    <MessageCircle size={20} className="" />
                   </div>
                   <a href="#" className="hover:underline">
                     081283993386
@@ -47,11 +47,11 @@ export default function Footer() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
-                    <MailCheck size={20} className="text-[#EF4444]" />
+                  <div className="">
+                    <Mail size={20} className="" />
                   </div>
                   <a href="#" className="hover:underline">
-                    081283993386
+                    indritekniklas@gmail.com
                   </a>
                 </div>
               </div>
@@ -83,11 +83,11 @@ export default function Footer() {
           {/* Kolom Kanan - FAQ */}
           <div className="lg:col-span-4 space-y-4">
             <h3 className="text-lg font-semibold">
-              FREQUENTLY ASKED QUESTION (F.A.Q)
+              Pertanyaan yang Sering Diajukan (F.A.Q)
             </h3>
 
             <Accordion
-              className="bg-[#212121] text-lg"
+              className="bg-[#212121] text-2lg"
               type="single"
               collapsible
               defaultValue="item-1"
