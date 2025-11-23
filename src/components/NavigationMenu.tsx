@@ -75,9 +75,9 @@ export function NavigationMenu() {
             </li>
 
             <li role="none">
-              <a role="menuitem" href="#blog" className="hover:underline">
+              <Link href="/blog" className="hover:underline">
                 Blog
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -180,9 +180,9 @@ export function NavigationMenu() {
               <Separator />
               <Link href="/kontak-kami">Kontak Kami</Link>
               <Separator />
-              <a href="#blog" className="py-2">
+              <Link href="/blog" className="hover:underline">
                 Blog
-              </a>
+              </Link>
               <Separator />
             </nav>
           </aside>
