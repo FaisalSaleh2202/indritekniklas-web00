@@ -1,5 +1,5 @@
 // app/blog/[slug]/page.tsx
-import { getBlogBySlug } from "@/lib/strapi";
+import { getBlogBySlug } from "@/lib/strapi/blog/blog.service";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,9 +12,11 @@ export default async function BlogDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data } = await getBlogBySlug(slug);
-  const blog = Array.isArray(data) ? data[0] : data;
+  const blogs = await getBlogBySlug(slug);
+  const blog = Array.isArray(blogs) ? blogs[0] : blogs;
   if (!blog) notFound();
+
+  console.log(blog);
 
   return (
     <article className="max-w-4xl mx-auto py-16 px-6">

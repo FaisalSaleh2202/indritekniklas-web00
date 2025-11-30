@@ -1,4 +1,6 @@
 // app/layout.tsx
+import Footer from "@/components/Footer";
+import { NavigationMenu } from "@/components/NavigationMenu";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import Script from "next/script"; // ← Tambahkan ini
@@ -29,7 +31,12 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className={roboto.className}>{children}</body>
+
+      <body className={roboto.className}>
+        <NavigationMenu />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

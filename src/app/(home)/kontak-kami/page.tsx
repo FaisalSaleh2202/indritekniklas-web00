@@ -1,6 +1,5 @@
 "use client";
 
-import { NavigationMenu } from "@/components/NavigationMenu";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -59,8 +58,6 @@ export default function Page() {
 
   return (
     <>
-      <NavigationMenu />
-
       <div className="px-4 sm:px-6 py-6 bg-gray-50">
         <motion.h2
           initial={{ opacity: 0, y: 60 }}
