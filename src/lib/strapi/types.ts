@@ -20,7 +20,7 @@ export type Service = {
   slug: string;
   short_description?: string;
   desc?: string;
-  description?: string;
+  description?: any[];
   meta_title?: string;
   meta_description: string;
   thumbnail?: {

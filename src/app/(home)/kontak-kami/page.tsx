@@ -153,26 +153,17 @@ export default function Page() {
                 <li>
                   <strong>📍 Alamat:</strong>
                   <br />
-                  Jl. Contoh No. 123, Jakarta
+                  Pekayon Jaya, Kec. Bekasi Sel., jl.masjid jami nurul mutaqin,
+                  RT.03/RW.04, Kota Bks, Jawa Barat 17148
                 </li>
                 <li>
                   <strong>📞 Telepon:</strong>
                   <br />
                   <a
-                    href="tel:+628123456789"
+                    href="tel:+6281283993386"
                     className="text-blue-600 hover:underline"
                   >
-                    +62 812-3456-789
-                  </a>
-                </li>
-                <li>
-                  <strong>✉ Email:</strong>
-                  <br />
-                  <a
-                    href="mailto:info@indritekniklas.com"
-                    className="text-blue-600 hover:underline"
-                  >
-                    info@indritekniklas.com
+                    +62 812-8399-3396
                   </a>
                 </li>
                 <li>
@@ -188,13 +179,13 @@ export default function Page() {
               <iframe
                 width="100%"
                 height="300"
-                loading="lazy"
                 className="rounded-lg"
+                loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3335.0052107805877!2d106.97829930899059!3d-6.262158714275422!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698de549e7328d%3A0x967837da2387e2d!2sIndri%20teknik%20las!5e0!3m2!1sen!2sid!4v1763817912270!5m2!1sen!2sid"
-                title="Lokasi Indri Teknik Las"
                 sandbox="allow-scripts allow-same-origin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31728.01505782536!2d106.95669327384631!3d-6.2634807737853535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698de549e7328d%3A0x967837da2387e2d!2sIndri%20teknik%20las!5e0!3m2!1sen!2sid!4v1764565697074!5m2!1sen!2sid"
+                title="Lokasi Indri Teknik Las"
               ></iframe>
             </div>
           </div>

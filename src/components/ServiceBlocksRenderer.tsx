@@ -16,9 +16,15 @@ export default function ServiceBlocksRenderer({ content }: Props) {
         content={content}
         blocks={{
           heading: ({ children, level }) =>
-            React.createElement(`h${level}`, {}, children),
+            React.createElement(
+              `h${level}`,
+              { className: "text-xl" },
+              children
+            ),
 
-          paragraph: ({ children }) => <p>{children}</p>,
+          paragraph: ({ children }) => (
+            <p className="text-justify py-1">{children}</p>
+          ),
 
           list: ({ children, format }) => {
             if (format === "unordered") return <ul>{children}</ul>;
@@ -26,7 +32,9 @@ export default function ServiceBlocksRenderer({ content }: Props) {
             return <ul>{children}</ul>;
           },
 
-          "list-item": ({ children }) => <li>{children}</li>,
+          "list-item": ({ children }) => (
+            <li className="text-justify py-1">{children}</li>
+          ),
         }}
         modifiers={{
           bold: ({ children }) => <strong>{children}</strong>,

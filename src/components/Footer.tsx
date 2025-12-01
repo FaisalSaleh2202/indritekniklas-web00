@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import NavigationDropdown from "./NavigationDropdown";
 
 export default function Footer() {
   return (
@@ -23,19 +24,20 @@ export default function Footer() {
                     <li>
                       <strong>📍 Alamat:</strong>
                       <br />
-                      Jl. Contoh No. 123, Jakarta
+                      Pekayon Jaya, Kec. Bekasi Sel., jl.masjid jami nurul
+                      mutaqin, RT.03/RW.04, Kota Bks, Jawa Barat 17148
                     </li>
                     <li>
                       <strong>📞 Telepon:</strong>
                       <br />
                       <a
-                        href="tel:+628123456789"
+                        href="tel:+6281283993386"
                         className="text-blue-600 hover:underline"
                       >
-                        +62 812-3456-789
+                        +62 812-8399-3396
                       </a>
                     </li>
-                    <li>
+                    {/* <li>
                       <strong>✉ Email:</strong>
                       <br />
                       <a
@@ -44,7 +46,7 @@ export default function Footer() {
                       >
                         info@indritekniklas.com
                       </a>
-                    </li>
+                    </li> */}
                     <li>
                       <strong>🕒 Jam Operasional:</strong>
                       <br />
@@ -55,25 +57,8 @@ export default function Footer() {
               </div>
 
               {/* Layanan */}
-              <div className="space-y-3">
-                <h2 className="font-semibold text-lg">Layanan</h2>
-                <ul className="space-y-2 text-base">
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Pagar
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Kanopi
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Tangga
-                    </a>
-                  </li>
-                </ul>
+              <div className="space-y-3 text-red">
+                <NavigationDropdown />
               </div>
             </div>
           </div>

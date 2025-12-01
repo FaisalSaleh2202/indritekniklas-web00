@@ -39,7 +39,7 @@ export function Testimonial() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true, amount: 0.3 }}
-        className="text-center text-2xl md:text-3xl font-light text-[#171717] mb-2"
+        className="text-center text-2xl md:text-2xl font-light text-[#171717] mb-2"
       >
         Apa Kata Pelanggan Kami
       </motion.h2>

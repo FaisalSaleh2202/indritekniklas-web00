@@ -15,15 +15,19 @@ import { useState } from "react";
 
 type Props = {
   services: Service[];
+  className?: string; // opsional
 };
 
-export default function NavigationDropdownClient({ services }: Props) {
+export default function NavigationDropdownClient({
+  services,
+  className,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="text-[#171717]">
+        <Button variant="ghost" className={className}>
           Layanan{" "}
           <ChevronDown
             className={`ml-2 h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}

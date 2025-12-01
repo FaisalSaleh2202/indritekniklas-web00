@@ -46,7 +46,7 @@ export default function StepToOrder() {
     >
       <div className="grid md:grid-cols-2 gap-6">
         <div className="max-w-4xl mx-auto text-center my-auto">
-          <h2 className="text-center text-2xl md:text-3xl font-light text-[#171717] mb-3">
+          <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717] mb-3">
             Proses Pemesanan
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
@@ -72,7 +72,7 @@ export default function StepToOrder() {
 
               {steps.map((step, index) => (
                 <StepperItem key={index} step={index + 1} className="relative">
-                  <StepperTrigger className="flex items-start gap-4 pb-12 last:pb-6">
+                  <StepperTrigger className="flex items-start gap-4 pb-6 last:pb-6">
                     {/* Bulatan Indicator Elegan */}
                     <StepperIndicator
                       className="

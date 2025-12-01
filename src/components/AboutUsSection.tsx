@@ -13,7 +13,7 @@ export function AboutUsSection() {
     >
       <div className="grid gap-6">
         {/* Title */}
-        <h2 className="text-center text-2xl md:text-3xl font-light text-[#171717]">
+        <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717]">
           Tentang Kami
         </h2>
 
