@@ -2,7 +2,7 @@ import { getAllServices } from "@/lib/strapi/service/service.service";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://bengkellasindriteknik.com/";
 
   // === STATIC ROUTES ===
   const staticRoutes: MetadataRoute.Sitemap = [
