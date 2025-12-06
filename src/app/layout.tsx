@@ -1,4 +1,5 @@
 // app/layout.tsx
+import AutoTooltip from "@/components/AutoTooltip";
 import Footer from "@/components/Footer";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import type { Metadata } from "next";
@@ -36,6 +37,7 @@ export default function RootLayout({
         <NavigationMenu />
         {children}
         <Footer />
+        <AutoTooltip />
       </body>
     </html>
   );

@@ -47,7 +47,7 @@ export function ServiceSection() {
           viewport={{ once: true }}
           className="text-center text-2xl md:text-2xl font-light text-[#171717]"
         >
-          Layanan Kami
+          Jasa Kami
         </motion.h2>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">

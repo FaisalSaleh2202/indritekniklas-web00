@@ -52,7 +52,7 @@ export function NavigationMenu() {
 
         {/* WHATSAPP DESKTOP */}
         <a
-          href="https://wa.me/628xxxx"
+          href="https://wa.me/6281283993386"
           className="hidden md:flex items-center gap-2"
           aria-label="Hubungi via WhatsApp"
         >

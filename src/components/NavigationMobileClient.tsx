@@ -107,7 +107,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
                 initialServices.map((service) => (
                   <li key={service.id}>
                     <Link
-                      href={`/layanan/${service.slug}`}
+                      href={`/jasa-las/${service.slug}`}
                       onClick={closeAll}
                       className="block py-2 text-gray-700 hover:text-black transition"
                     >

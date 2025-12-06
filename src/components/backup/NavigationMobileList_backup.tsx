@@ -14,7 +14,7 @@ export default function NavigationMobileList() {
       {services.map((service: any) => (
         <li key={service.id}>
           <Link
-            href={`/layanan/${service.slug}`}
+            href={`/jasa-las/${service.slug}`}
             className="text-gray-700 hover:text-black"
           >
             {service.title}

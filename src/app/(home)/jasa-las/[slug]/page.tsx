@@ -94,6 +94,12 @@ export default async function ServiceDetailPage({
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="#">Layanan</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
                 <BreadcrumbPage>{service.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>

@@ -39,7 +39,7 @@ export default function NavigationDropdownClient({
         <DropdownMenuGroup>
           {services.map((service) => (
             <DropdownMenuItem key={service.id} asChild>
-              <a href={`/layanan/${service.slug}`}>{service.title}</a>
+              <a href={`/jasa-las/${service.slug}`}>{service.title}</a>
             </DropdownMenuItem>
           ))}
           {/* fallback items */}
