@@ -28,7 +28,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
   return (
     <>
       {/* Tombol Toggle Menu – VERSI SUPER SMOOTH */}
-      <div className="md:hidden fixed right-4 z-50">
+      <div className="md:hidden fixed top-0 right-4 z-50">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Buka/tutup menu navigasi"

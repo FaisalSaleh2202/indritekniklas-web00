@@ -22,31 +22,15 @@ export default function Page() {
     setResult(null);
 
     try {
-      // INI BARIS PENTING: Ambil token reCAPTCHA v3
-      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-      if (!siteKey) {
-        throw new Error("reCAPTCHA Site Key tidak ditemukan");
-      }
-
-      const token = await window.grecaptcha.execute(siteKey, {
-        action: "submit_contact",
-      });
-
-      // Kirim token bersama data form
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          email,
-          message,
-          recaptchaToken: token, // ← tambah ini
-        }),
+        body: JSON.stringify({ firstName, email, message }),
       });
 
       const data = await res.json();
       setResult(data);
-    } catch (err: any) {
+    } catch (err) {
       setResult({ success: false, error: "Gagal mengirim pesan" });
     } finally {
       setFirstName("");
@@ -55,7 +39,6 @@ export default function Page() {
       setLoading(false);
     }
   };
-
   return (
     <>
       <div className="px-4 sm:px-6 py-6 bg-gray-50">
@@ -76,7 +59,6 @@ export default function Page() {
             <h2 className="text-2xl font-semibold mb-6">Kirim Pesan</h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Name */}
               <div className="flex flex-col gap-1">
                 <label className="font-medium">Nama Lengkap</label>
                 <input
@@ -84,11 +66,10 @@ export default function Page() {
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              {/* Email */}
               <div className="flex flex-col gap-1">
                 <label className="font-medium">Email</label>
                 <input
@@ -96,11 +77,10 @@ export default function Page() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              {/* Message */}
               <div className="flex flex-col gap-1">
                 <label className="font-medium">Pesan</label>
                 <textarea
@@ -108,11 +88,10 @@ export default function Page() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={5}
-                  className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
                 ></textarea>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -126,7 +105,6 @@ export default function Page() {
               </button>
             </form>
 
-            {/* Response */}
             {/* {result && (
               <div
                 className={`mt-6 p-4 rounded-lg text-sm border ${
