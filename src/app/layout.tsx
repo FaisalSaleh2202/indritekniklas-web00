@@ -1,10 +1,10 @@
 // app/layout.tsx
 import AutoTooltip from "@/components/AutoTooltip";
 import Footer from "@/components/Footer";
+import GoogleCaptchaWrapper from "@/components/GoogleCaptchaWrapper";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -60,8 +60,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -116,12 +114,6 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
-        {/* reCAPTCHA */}
-        <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${siteKey}`}
-          strategy="afterInteractive"
-        />
-
         {/* JSON-LD LocalBusiness */}
         <script
           type="application/ld+json"
@@ -136,10 +128,12 @@ export default function RootLayout({
       </head>
 
       <body className={roboto.className}>
-        <NavigationMenu />
-        {children}
-        <Footer />
-        <AutoTooltip />
+        <GoogleCaptchaWrapper>
+          <NavigationMenu />
+          {children}
+          <Footer />
+          <AutoTooltip />
+        </GoogleCaptchaWrapper>
       </body>
     </html>
   );

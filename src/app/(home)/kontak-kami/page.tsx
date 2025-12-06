@@ -1,7 +1,9 @@
 "use client";
 
+import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 declare global {
   interface Window {
@@ -15,13 +17,34 @@ export default function Page() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setResult(null);
 
+    if (!executeRecaptcha) {
+      setLoading(false);
+      return;
+    }
+
     try {
+      // Jalankan reCAPTCHA
+      const gRecaptchaToken = await executeRecaptcha("inquirySubmit");
+
+      // Kirim token ke backend untuk verifikasi
+      await axios.post(
+        "/api/recaptchaSubmit",
+        { gRecaptchaToken },
+        {
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Kirim email
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -30,12 +53,17 @@ export default function Page() {
 
       const data = await res.json();
       setResult(data);
-    } catch (err) {
-      setResult({ success: false, error: "Gagal mengirim pesan" });
-    } finally {
+
+      // Reset form
       setFirstName("");
       setEmail("");
       setMessage("");
+    } catch (err: any) {
+      setResult({
+        success: false,
+        error: err?.response?.data?.error || "Gagal mengirim pesan",
+      });
+    } finally {
       setLoading(false);
     }
   };

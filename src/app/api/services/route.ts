@@ -3,8 +3,7 @@ import { getAllServices } from "@/lib/strapi/service/service.service";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const services = await getAllServices(); // token aman karena jalan di server
-  console.log(services);
+  const services = await getAllServices();
   return NextResponse.json(services);
 }
 

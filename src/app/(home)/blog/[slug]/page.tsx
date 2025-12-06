@@ -16,8 +16,6 @@ export default async function BlogDetail({
   const blog = Array.isArray(blogs) ? blogs[0] : blogs;
   if (!blog) notFound();
 
-  console.log(blog);
-
   return (
     <article className="max-w-4xl mx-auto py-16 px-6">
       <h1 className="text-4xl font-bold mb-8">{blog.title}</h1>
