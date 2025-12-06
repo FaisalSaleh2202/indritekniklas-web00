@@ -46,11 +46,27 @@ export async function generateMetadata({
     : undefined;
 
   return {
-    title: `Jasa Pembuatan ${service.title} Harga Terjangkau - Indri Teknik Las`,
-    description: service.meta_description || `Detail layanan ${service.title}`,
-    openGraph: {
-      images: img ? [{ url: img }] : [],
+    title: {
+      default: `Bengkel Las ${service.title}`,
+      template: "%s - las terdekat",
     },
+    alternates: {
+      canonical: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
+    },
+    robots:
+      "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+    description: `Bengkel Las ${service.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri.`,
+    openGraph: {
+      title: `Bengkel Las ${service.title}`,
+      description: `Bengkel Las ${service.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri..`,
+      type: "article",
+      locale: "id",
+      url: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
+      siteName: `Bengkel Las ${service.title}`,
+    },
+    metadataBase: new URL(
+      `https://bengkellasindriteknik.com/jasa-las/${service.slug}`
+    ),
   };
 }
 
@@ -92,13 +108,14 @@ export default async function ServiceDetailPage({
       image: "https://bengkellasindriteknik.com/opengraph-image.png",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Jakarta",
-        addressLocality: "Jakarta",
-        addressRegion: "DKI Jakarta",
-        addressCountry: "ID",
+        streetAddress: "Pekayon Jaya RT/RW. 003/004 Bekasi Selatan",
+        addressLocality: "Bekasi",
+        addressRegion: "Jawa Barat",
+        postalCode: "17148",
+        addressCountry: "Indonesia",
       },
-      telephone: "+628xxxxxxxx",
-      priceRange: "Rp",
+      telephone: "+6281283993386",
+      priceRange: "Rp. 550.000",
     },
     url: `https://www.bengkellasindriteknik.com/layanan/${service.slug}`,
     offers: {

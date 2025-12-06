@@ -13,7 +13,10 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Indri Teknik Las – Bengkel Las Terdekat & Profesional",
+  title: "Indri Teknik Las – Bengkel Las Terdekat dan Berpengalaman",
+  alternates: {
+    canonical: `https://bengkellasindriteknik.com`,
+  },
   description:
     "Indri Teknik Las menyediakan layanan las profesional: pagar besi, kanopi, tralis, railing tangga, dan berbagai konstruksi besi. Harga terjangkau, kualitas terbaik.",
   keywords: [
@@ -30,9 +33,9 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: "https://bengkellasindriteknik.com",
     siteName: "Indri Teknik Las",
-    title: "Indri Teknik Las – Bengkel Las Terdekat & Profesional",
+    title: "Indri Teknik Las – Bengkel Las Terdekat dan Berpengalaman",
     description:
-      "Jasa bengkel las profesional: pagar besi, kanopi, tralis, railing tangga, dan konstruksi besi lainnya.",
+      "Jasa bengkel las berpengalaman: pagar besi, kanopi, tralis, railing tangga, dan konstruksi besi lainnya.",
     images: [
       {
         url: "https://bengkellasindriteknik.com/opengraph-image.png",
@@ -44,11 +47,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Indri Teknik Las – Jasa Las Profesional",
+    title: "Indri Teknik Las – Jasa Las Berpengalaman",
     description:
       "Layanan las pagar besi, kanopi, tralis, railing tangga, dan konstruksi besi lain.",
     images: ["https://bengkellasindriteknik.com/opengraph-image.png"],
   },
+  metadataBase: new URL(`https://bengkellasindriteknik.com`),
 };
 
 export default function RootLayout({
