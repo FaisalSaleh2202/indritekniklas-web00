@@ -80,6 +80,37 @@ export default async function ServiceDetailPage({
     ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
     : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.meta_description || service.short_description,
+    image: "https://bengkellasindriteknik.com/opengraph-image.png",
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Indri Teknik Las",
+      image: "https://bengkellasindriteknik.com/opengraph-image.png",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Jakarta",
+        addressLocality: "Jakarta",
+        addressRegion: "DKI Jakarta",
+        addressCountry: "ID",
+      },
+      telephone: "+628xxxxxxxx",
+      priceRange: "Rp",
+    },
+    url: `https://www.bengkellasindriteknik.com/layanan/${service.slug}`,
+    offers: {
+      "@type": "Offer",
+      price: "550.000",
+      priceCurrency: "IDR",
+      availability: "https://schema.org/InStock",
+    },
+    datePublished: service.createdAt,
+    dateModified: service.updatedAt,
+  };
+
   return (
     <div className="min-h-screen">
       {/* HERO SECTION */}
@@ -176,6 +207,12 @@ export default async function ServiceDetailPage({
         <StepToOrder />
         <Testimonial />
       </footer>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
     </div>
   );
 }

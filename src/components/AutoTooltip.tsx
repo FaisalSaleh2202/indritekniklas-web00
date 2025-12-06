@@ -28,7 +28,7 @@ export default function BubbleWhatsApp() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2">
+    <div className="fixed bottom-6 left-4 z-50 flex items-center gap-2">
       <Tooltip open>
         {" "}
         {/* <-- selalu terbuka */}

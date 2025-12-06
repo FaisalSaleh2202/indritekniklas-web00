@@ -12,7 +12,6 @@ export default async function Home() {
           <Hero1 heading="Welcome" description="Explore our features." />
           <ServiceSection />
           <AboutUsSection />
-          {/* <KeunggulanSection /> */}
           <StepToOrder />
           <Testimonial />
         </div>
