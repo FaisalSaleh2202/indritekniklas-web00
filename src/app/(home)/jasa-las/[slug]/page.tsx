@@ -13,10 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-  getAllServices,
-  getServiceBySlug,
-} from "@/lib/strapi/service/service.service";
+import { getServiceBySlug } from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";
 import { MessageCircle, Phone } from "lucide-react";
 import { Metadata } from "next";
@@ -24,12 +21,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-  const services = await getAllServices();
-  return services.map((service) => ({
-    slug: service.slug,
-  }));
-}
+// export async function generateStaticParams() {
+//   const services = await getAllServices();
+//   return services.map((service) => ({
+//     slug: service.slug,
+//   }));
+// }
 
 export async function generateMetadata({
   params,
@@ -43,9 +40,9 @@ export async function generateMetadata({
     return { title: "Layanan Tidak Ditemukan" };
   }
 
-  const img = service.thumbnail?.url
-    ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
-    : undefined;
+  // const img = service.thumbnail?.url
+  //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
+  //   : undefined;
 
   return {
     title: {
@@ -94,9 +91,9 @@ export default async function ServiceDetailPage({
     ?.filter((b: any) => b.type === "paragraph")
     .slice(0, 2);
 
-  const thumbnailUrl = service.thumbnail?.url
-    ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
-    : null;
+  // const thumbnailUrl = service.thumbnail?.url
+  //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
+  //   : null;
 
   const jsonLd = {
     "@context": "https://schema.org",

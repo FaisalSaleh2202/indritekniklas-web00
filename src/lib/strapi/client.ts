@@ -1,11 +1,11 @@
 // src/lib/strapi/client.ts
 import type { StrapiResponse } from "./types"; // ini yang paling sering lupa!
-
+const STRAPI_URL = process.env.STRAPI_URL || "http://31.97.50.253:1337";
 export async function fetchFromStrapi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<StrapiResponse<T>> {
-  const url = `${process.env.STRAPI_URL}/api${endpoint}`;
+  const url = `${STRAPI_URL}/api${endpoint}`;
 
   const response = await fetch(url, {
     headers: {
