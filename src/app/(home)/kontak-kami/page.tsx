@@ -1,4 +1,7 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -84,7 +87,7 @@ export default function Page() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6">
           {/* FORM */}
           <div className="bg-white p-8  shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6">Kirim Pesan</h2>
+            <h2 className="text-2xl font-semibold mb-6">kirim pesan</h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-1">

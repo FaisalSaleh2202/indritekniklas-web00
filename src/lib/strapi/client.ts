@@ -1,6 +1,9 @@
 // src/lib/strapi/client.ts
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 import type { StrapiResponse } from "./types"; // ini yang paling sering lupa!
-const STRAPI_URL = process.env.STRAPI_URL || "http://31.97.50.253:1337";
+const STRAPI_URL = process.env.STRAPI_URL;
 export async function fetchFromStrapi<T>(
   endpoint: string,
   options: RequestInit = {}

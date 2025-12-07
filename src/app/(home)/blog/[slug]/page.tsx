@@ -1,12 +1,14 @@
 // app/blog/[slug]/page.tsx
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 import { getBlogBySlug } from "@/lib/strapi/blog/blog.service";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export const revalidate = 3600;
+// export const revalidate = 3600;
 
 export default async function BlogDetail({
   params,

@@ -1,6 +1,7 @@
 // app/layanan/[slug]/page.tsx
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 import ServiceBlocksRenderer from "@/components/ServiceBlocksRenderer";
 import StepToOrder from "@/components/StepToOrder";
 import { Testimonial } from "@/components/Testimonial";

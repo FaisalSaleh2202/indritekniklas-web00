@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 import { fetchFromStrapi } from "../client";
 import { SORT_DATE_DESC } from "../queries";
 import { Service } from "../types";
