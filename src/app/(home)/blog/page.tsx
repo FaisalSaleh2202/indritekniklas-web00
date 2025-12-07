@@ -1,7 +1,6 @@
 // app/blog/page.tsx
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-
 import { getAllBlogs } from "@/lib/strapi/blog/blog.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";
@@ -18,7 +17,7 @@ export default async function BlogPage() {
     return (
       <>
         <div className="max-w-6xl mx-auto py-20 text-center">
-          <p className="text-xl text-gray-600">Belum ada artikel.</p>
+          <p className="text-xl text-gray-600">Belum ada artikel saat ini.</p>
         </div>
       </>
     );
