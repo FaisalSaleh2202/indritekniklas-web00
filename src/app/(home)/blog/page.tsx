@@ -1,4 +1,5 @@
 // app/blog/page.tsx
+export const fetchCache = "force-no-store";
 import { getAllBlogs } from "@/lib/strapi/blog/blog.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";

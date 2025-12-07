@@ -1,4 +1,5 @@
 // app/blog/[slug]/page.tsx
+export const fetchCache = "force-no-store";
 import { getBlogBySlug } from "@/lib/strapi/blog/blog.service";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";

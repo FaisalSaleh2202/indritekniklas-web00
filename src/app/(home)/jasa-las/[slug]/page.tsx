@@ -1,4 +1,5 @@
 // app/layanan/[slug]/page.tsx
+export const fetchCache = "force-no-store";
 import ServiceBlocksRenderer from "@/components/ServiceBlocksRenderer";
 import StepToOrder from "@/components/StepToOrder";
 import { Testimonial } from "@/components/Testimonial";
