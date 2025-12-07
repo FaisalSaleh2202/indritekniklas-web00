@@ -1,8 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
-
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
