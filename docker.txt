@@ -1,0 +1,32 @@
+services:
+  app:
+    container_name: indritekniklas-web
+    image: node:lts-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run build && npx next start -p 3000 -H 0.0.0.0"
+#    command: sh -c "npm ci && npm run build && npx next start -p 3000 -H 0.0.0.0"
+    labels:
+      - traefik.enable=true
+
+      # HTTPS
+      - traefik.http.routers.indritekniklas.rule=Host(`bengkellasindriteknik.com`) || Host(`www.bengkellasindriteknik.com`)
+      - traefik.http.routers.indritekniklas.entrypoints=websecure
+      - traefik.http.routers.indritekniklas.tls=true
+      - traefik.http.routers.indritekniklas.tls.certresolver=mytlschallenge
+      - traefik.http.services.indritekniklas.loadbalancer.server.port=3000
+
+      # HTTP -> Redirect ke HTTPS
+      - traefik.http.routers.indritekniklas-http.rule=Host(`bengkellasindriteknik.com`) || Host(`www.bengkellasindriteknik.com`)
+      - traefik.http.routers.indritekniklas-http.entrypoints=web
+      - traefik.http.routers.indritekniklas-http.middlewares=redirect-to-https
+
+      # Middleware
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+
+    networks:
+      - root_default
+
+networks:
+  root_default:
+    external: true
