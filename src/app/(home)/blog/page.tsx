@@ -4,6 +4,7 @@ export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
 import { getAllBlogs } from "@/lib/strapi/blog/blog.service";
+import { getAllServiceLocations } from "@/lib/strapi/service-location/service-location.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
@@ -13,9 +14,10 @@ import Link from "next/link";
 
 export default async function BlogPage() {
   const blogs = await getAllBlogs();
+  const serviceLocations = await getAllServiceLocations();
   const services = await getAllServices();
 
-  if (!blogs || blogs.length === 0) {
+  if (!serviceLocations || serviceLocations.length === 0) {
     return (
       <>
         <div className="max-w-6xl mx-auto py-20 text-center">
@@ -25,12 +27,12 @@ export default async function BlogPage() {
     );
   }
 
-  const latest = blogs[0];
-  const topReads = blogs.slice(1, 4);
+  const latest = serviceLocations[0];
+  const topReads = serviceLocations.slice(1, 4);
 
   const getImageUrl = (blog: any) => {
-    const img = blog.image?.[0];
-    return img ? `${process.env.STRAPI_URL}${img.url}` : null;
+    const thumbnail = blog.thumbnail?.[0];
+    return thumbnail ? `${process.env.STRAPI_URL}${thumbnail.url}` : null;
   };
 
   return (
@@ -52,7 +54,7 @@ export default async function BlogPage() {
                   alt={latest.title}
                   width={800}
                   height={450}
-                  className="w-full h-96 object-cover"
+                  className="w-full object-contain"
                   priority
                 />
               ) : (
@@ -64,10 +66,10 @@ export default async function BlogPage() {
                   {latest.title}
                 </h3>
                 <p className="text-gray-600 line-clamp-3 mb-4">
-                  {latest.content.replace(/<[^>]*>/g, "").slice(0, 250)}...
+                  {latest.title.replace(/<[^>]*>/g, "").slice(0, 250)}...
                 </p>
                 <p className="text-sm text-gray-500">
-                  {formatDate(latest.publishedTime || latest.createdAt)}
+                  {formatDate(latest.createdAt || latest.createdAt)}
                 </p>
               </div>
             </Link>
@@ -99,7 +101,7 @@ export default async function BlogPage() {
                       {blog.title}
                     </h4>
                     <p className="text-xs text-gray-500 mt-1">
-                      {formatDate(blog.publishedTime || blog.createdAt)}
+                      {formatDate(blog.createdAt || blog.createdAt)}
                     </p>
                   </div>
                 </Link>

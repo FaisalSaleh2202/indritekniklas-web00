@@ -11,7 +11,7 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: "31.97.50.253", // IP server Strapi
+        hostname: "31.97.50.253",
         port: "1337",
         pathname: "/uploads/**",
       },

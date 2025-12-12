@@ -132,7 +132,7 @@ export default async function ServiceDetailPage({
     <div className="min-h-screen">
       {/* HERO SECTION */}
       <header className="py-6 bg-gray-50">
-        <div className="mx-auto px-4 mb-6">
+        <div className="mx-auto px-6 mb-6">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -161,69 +161,71 @@ export default async function ServiceDetailPage({
         </div>
       </header>
 
-      {/* META */}
-      <section className="px-4 pt-3 text-sm text-gray-700">
-        <span>{formatDate(service.createdAt)}</span>,{" "}
-        <span>Indri Teknik Las Team</span>
-        <br />
-        <span className="text-gray-500">Waktu Membaca 3 Menit</span>
-      </section>
+      <div className="md:w-3/4 mx-auto">
+        {/* META */}
+        <section className="px-4 pt-3 text-sm text-gray-700">
+          <span>{formatDate(service.createdAt)}</span>,{" "}
+          <span>Indri Teknik Las Team</span>
+          <br />
+          <span className="text-gray-500">Waktu Membaca 3 Menit</span>
+        </section>
 
-      {/* CONTENT */}
-      <main className="py-6 px-4">
-        <article className="grid md:grid-cols-2 gap-12">
-          {/* IMAGE */}
-          <figure>
-            {service.thumbnail ? (
-              <Image
-                src={process.env.STRAPI_URL + service.thumbnail.url}
-                alt={service.title}
-                width={600}
-                height={400}
-                className="rounded-2xl shadow-md object-cover w-full h-96"
-                loading="eager"
-              />
-            ) : (
-              <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
-            )}
-            <figcaption className="sr-only">{service.title}</figcaption>
-          </figure>
+        {/* CONTENT */}
+        <main className="py-6 px-4">
+          <article className="grid md:grid-cols-2 gap-12">
+            {/* IMAGE */}
+            <figure>
+              {service.thumbnail ? (
+                <Image
+                  src={process.env.STRAPI_URL + service.thumbnail.url}
+                  alt={service.title}
+                  width={600}
+                  height={400}
+                  className="rounded-xl shadow-md object-contain w-full"
+                  loading="eager"
+                />
+              ) : (
+                <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
+              )}
+              <figcaption className="sr-only">{service.title}</figcaption>
+            </figure>
 
-          {/* OPENING PARAGRAPH */}
-          <div>
-            <ServiceBlocksRenderer content={openingParagraph} />
-            {/* BUTTON */}
-            <div className="mt-6 grid">
-              <span className="text-center mb-3 font-semibold text-gray-500">
-                Hubungi Kami Untuk Konsultasi Kebutuhan Anda Sekarang
-              </span>
+            {/* OPENING PARAGRAPH */}
+            <div>
+              <ServiceBlocksRenderer content={openingParagraph} />
+              {/* BUTTON */}
+              <div className="mt-6 grid">
+                <span className="text-center mb-3 font-semibold text-gray-500">
+                  Hubungi Kami Untuk Konsultasi Kebutuhan Anda Sekarang
+                </span>
 
-              <Button
-                asChild
-                className="rounded-full font-light shadow-xl inline-flex items-center gap-2 bg-green-500 text-black hover:bg-green-600 transition"
-              >
-                <a aria-label="Hubungi via WhatsApp">
-                  Phone / Whatsapp
-                  <Phone aria-hidden="true" />
-                  <MessageCircle aria-hidden="true" />
-                </a>
-              </Button>
+                <Button
+                  asChild
+                  className="rounded-full font-light shadow-xl inline-flex items-center gap-2 bg-green-500 text-black hover:bg-green-600 transition"
+                >
+                  <a aria-label="Hubungi via WhatsApp">
+                    Phone / Whatsapp
+                    <Phone aria-hidden="true" />
+                    <MessageCircle aria-hidden="true" />
+                  </a>
+                </Button>
+              </div>
             </div>
-          </div>
-        </article>
-      </main>
+          </article>
+        </main>
 
-      {/* LIST & HEADING */}
-      <section className="px-4 space-y-3">
-        <ServiceBlocksRenderer content={heading2} />
-        <ServiceBlocksRenderer content={list} />
-      </section>
+        {/* LIST & HEADING */}
+        <section className="px-4 space-y-3">
+          <ServiceBlocksRenderer content={heading2} />
+          <ServiceBlocksRenderer content={list} />
+        </section>
 
-      {/* STEP + TESTIMONIAL */}
-      <footer className="px-4">
-        <StepToOrder />
-        <Testimonial />
-      </footer>
+        {/* STEP + TESTIMONIAL */}
+        <footer className="px-4">
+          <StepToOrder />
+          <Testimonial />
+        </footer>
+      </div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
