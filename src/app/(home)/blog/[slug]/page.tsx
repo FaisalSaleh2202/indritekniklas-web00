@@ -170,10 +170,13 @@ export default async function BlogDetail({
                 {/* Thumbnail */}
                 {service.thumbnail?.url && (
                   <div className="relative w-full h-64 md:h-72">
-                    <img
+                    <Image
                       src={process.env.STRAPI_URL + service.thumbnail.url}
                       alt={service.title}
-                      className="w-full h-full object-cover"
+                      width={600}
+                      height={400}
+                      className="rounded-xl shadow-md object-contain w-full"
+                      loading="eager"
                     />
 
                     {/* Title overlay */}
