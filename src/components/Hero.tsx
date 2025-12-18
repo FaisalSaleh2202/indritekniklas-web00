@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";
 
-interface Hero1Props {
+interface HeroProps {
   badge?: string;
   heading: string;
   description: string;
@@ -14,7 +14,7 @@ interface Hero1Props {
   };
 }
 
-const Hero1 = ({
+const Hero = ({
   badge = "✨ Solusi Bengkel Las Profesional",
   heading = "Bengkel Las Terdekat & Berpengalaman",
   description = "Kami menyediakan layanan las profesional untuk kebutuhan rumah, kantor, bangunan komersial, hingga proyek konstruksi skala besar. Dikerjakan oleh tenaga berpengalaman dengan hasil rapi, kuat, dan bergaransi.",
@@ -24,7 +24,7 @@ const Hero1 = ({
       url: "#kontak",
     },
   },
-}: Hero1Props) => {
+}: HeroProps) => {
   return (
     <section className="relative" aria-labelledby="hero-heading" role="banner">
       {/* Background Image */}
@@ -131,4 +131,4 @@ const Hero1 = ({
   );
 };
 
-export { Hero1 };
+export { Hero };

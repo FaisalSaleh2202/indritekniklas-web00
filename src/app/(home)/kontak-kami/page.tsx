@@ -132,7 +132,7 @@ export default function Page() {
               </button>
             </form>
 
-            {/* {result && (
+            {result && (
               <div
                 className={`mt-6 p-4 rounded-lg text-sm border ${
                   result?.success
@@ -145,7 +145,7 @@ export default function Page() {
                   {JSON.stringify(result, null, 2)}
                 </pre>
               </div>
-            )} */}
+            )}
           </div>
 
           {/* KONTAK & MAP */}

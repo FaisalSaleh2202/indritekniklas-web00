@@ -9,5 +9,3 @@ export async function GET() {
   const services = await getAllServices();
   return NextResponse.json(services);
 }
-
-// export const revalidate = 3600; // cache 1 jam

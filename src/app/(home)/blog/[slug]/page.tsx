@@ -165,7 +165,7 @@ export default async function BlogDetail({
             {serviceList.map((service: any) => (
               <article
                 key={service.id}
-                className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
+                className="relative overflow-hidden shadow-sm hover:shadow-md transition"
               >
                 {/* Thumbnail */}
                 {service.thumbnail?.url && (
@@ -173,9 +173,9 @@ export default async function BlogDetail({
                     <Image
                       src={process.env.STRAPI_URL + service.thumbnail.url}
                       alt={service.title}
-                      width={600}
+                      width={500}
                       height={400}
-                      className="rounded-xl shadow-md object-contain w-full"
+                      className="object-cover w-full h-full"
                       loading="eager"
                     />
 
