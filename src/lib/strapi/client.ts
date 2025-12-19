@@ -3,12 +3,12 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 import type { StrapiResponse } from "./types"; // ini yang paling sering lupa!
-const STRAPI_URL = process.env.STRAPI_URL;
+const NEXT_PUBLIC_STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 export async function fetchFromStrapi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<StrapiResponse<T>> {
-  const url = `${STRAPI_URL}/api${endpoint}`;
+  const url = `${NEXT_PUBLIC_STRAPI_URL}/api${endpoint}`;
 
   const response = await fetch(url, {
     headers: {

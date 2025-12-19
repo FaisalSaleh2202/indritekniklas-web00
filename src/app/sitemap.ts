@@ -1,13 +1,14 @@
+import { getAllServiceLocations } from "@/lib/strapi/service-location/service-location.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://bengkellasindriteknik.com/";
+  const baseUrl = "https://bengkellasindriteknik.com";
 
   // === STATIC ROUTES ===
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
+      url: `${baseUrl}/`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1.0,
@@ -39,5 +40,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })) ?? [];
 
-  return [...staticRoutes, ...serviceRoutes];
+
+  const serviceLocation = await getAllServiceLocations(); 
+
+
+  const servicesLocationRoutes: MetadataRoute.Sitemap =
+    serviceLocation?.map((service: any) => ({
+      url: `${baseUrl}/blog/${service.slug}`,
+      lastModified: service.updatedAt
+        ? new Date(service.updatedAt)
+        : new Date(),
+    })) ?? [];
+
+  return [...staticRoutes, ...serviceRoutes, ...servicesLocationRoutes];
 }
