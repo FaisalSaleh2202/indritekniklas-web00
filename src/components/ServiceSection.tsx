@@ -11,13 +11,13 @@ export function ServiceSection({
   services: ServiceWithImageUrl[];
 }) {
   return (
-    <section className="px-4 sm:px-6 py-8 bg-gray-50 ">
-      <div className="grid gap-6">
+    <section className="bg-gray-50 py-8">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717]">
           Jasa Kami
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-8 mx-auto">
+        <div className="mt-6 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 md:gap-8">
           {services.map((service) => (
             <article
               key={service.id}

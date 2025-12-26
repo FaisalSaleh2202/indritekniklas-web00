@@ -2,7 +2,7 @@ import { MessageCircle } from "lucide-react";
 
 export default function BubbleWhatsApp() {
   return (
-    <div className="fixed bottom-6 left-4 z-50 flex items-center gap-2">
+    <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-4 z-50 flex items-center gap-2">
       <a
         href="https://wa.me/6281283993386"
         target="_blank"
@@ -12,7 +12,7 @@ export default function BubbleWhatsApp() {
       >
         <MessageCircle size={28} />
       </a>
-      <span className="bg-green-600 text-white shadow-lg px-4 py-2 rounded-md font-medium">
+      <span className="hidden sm:inline-flex bg-green-600 text-white shadow-lg px-4 py-2 rounded-md font-medium">
         Chat via WhatsApp
       </span>
     </div>

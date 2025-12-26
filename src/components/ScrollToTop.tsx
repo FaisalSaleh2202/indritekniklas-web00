@@ -44,7 +44,7 @@ export default function ScrollToTop() {
       onClick={onClick}
       aria-label="Kembali ke atas"
       className={[
-        "fixed bottom-6 right-4 md:right-6 z-50",
+        "fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 md:right-6 z-50",
         "h-11 w-11",
         "rounded-full",
         "bg-slate-900/85 text-white",
@@ -60,4 +60,3 @@ export default function ScrollToTop() {
     </button>
   );
 }
-
