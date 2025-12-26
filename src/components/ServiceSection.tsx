@@ -32,7 +32,7 @@ export function ServiceSection({
                     width={500}
                     height={400}
                     className="object-cover w-full h-full"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    // sizes="(max-width: 768px) 100vw, 33vw"
                   />
 
                   {/* Title overlay */}
