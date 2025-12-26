@@ -1,13 +1,13 @@
 // app/layout.tsx
 import AutoTooltip from "@/components/AutoTooltip";
 import Footer from "@/components/Footer";
-import GoogleCaptchaWrapper from "@/components/GoogleCaptchaWrapper";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import ScrollToTop from "@/components/ScrollToTop";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 
-const roboto = Roboto({
+const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
@@ -112,7 +112,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="id">
+    <html lang="id" data-scroll-behavior="smooth">
       <head>
         {/* JSON-LD LocalBusiness */}
         <script
@@ -127,13 +127,12 @@ export default function RootLayout({
         />
       </head>
 
-      <body className={roboto.className}>
-        <GoogleCaptchaWrapper>
-          <NavigationMenu />
-          {children}
-          <Footer />
-          <AutoTooltip />
-        </GoogleCaptchaWrapper>
+      <body className={nunitoSans.className}>
+        <NavigationMenu />
+        {children}
+        <Footer />
+        <AutoTooltip />
+        <ScrollToTop />
       </body>
     </html>
   );

@@ -1,7 +1,6 @@
 // components/NavigationMobileClient.tsx
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -82,7 +81,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
           >
             Beranda
           </Link>
-          <Separator className="my-1" />
+          <hr className="my-1 border-gray-200" />
 
           {/* Layanan */}
           <button
@@ -123,7 +122,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
             </ul>
           </div>
 
-          <Separator className="my-1" />
+          <hr className="my-1 border-gray-200" />
 
           {/* Kontak & Blog */}
           <Link
@@ -133,7 +132,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
           >
             Kontak Kami
           </Link>
-          <Separator className="my-1" />
+          <hr className="my-1 border-gray-200" />
 
           <Link
             href="/blog"
@@ -142,7 +141,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
           >
             Blog
           </Link>
-          <Separator className="my-1" />
+          <hr className="my-1 border-gray-200" />
         </nav>
       </aside>
     </>

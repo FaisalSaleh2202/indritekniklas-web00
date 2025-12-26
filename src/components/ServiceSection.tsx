@@ -1,30 +1,30 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Image from "next/image";
+import type { Service } from "@/lib/strapi/types";
 
-export function ServiceSection({ services }: { services: any[] }) {
+type ServiceWithImageUrl = Service & {
+  imageUrl: string | null;
+};
+
+export function ServiceSection({
+  services,
+}: {
+  services: ServiceWithImageUrl[];
+}) {
   return (
     <section className="px-4 sm:px-6 py-8 bg-gray-50 ">
       <div className="grid gap-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9 }}
-          viewport={{ once: true }}
-          className="text-center text-2xl md:text-2xl font-light text-[#171717]"
-        >
+        <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717]">
           Jasa Kami
-        </motion.h2>
+        </h2>
 
         <div className="grid md:grid-cols-3 gap-8 mx-auto">
-          {services.map((service: any) => (
+          {services.map((service) => (
             <article
               key={service.id}
               className="relative overflow-hidden shadow-sm hover:shadow-md transition"
             >
               {/* Thumbnail */}
-              {service.thumbnail?.url && (
+              {service.imageUrl && (
                 <div className="relative w-full h-64 md:h-72">
                   <Image
                     src={service.imageUrl}
@@ -32,7 +32,7 @@ export function ServiceSection({ services }: { services: any[] }) {
                     width={500}
                     height={400}
                     className="object-cover w-full h-full"
-                    loading="eager"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                   />
 
                   {/* Title overlay */}

@@ -1,16 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 export function AboutUsSection() {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true }}
-      className="px-4 sm:px-6 py-8 max-w-5xl mx-auto"
-    >
+    <section className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
       <div className="grid gap-6">
         {/* Title */}
         <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717]">
@@ -40,6 +30,6 @@ export function AboutUsSection() {
           </div>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

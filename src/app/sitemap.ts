@@ -1,5 +1,6 @@
 import { getAllServiceLocations } from "@/lib/strapi/service-location/service-location.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
+import type { Service, ServiceLocation } from "@/lib/strapi/types";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -31,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const services = await getAllServices();
 
   const serviceRoutes: MetadataRoute.Sitemap =
-    services?.map((service: any) => ({
+    services?.map((service: Service) => ({
       url: `${baseUrl}/jasa-las/${service.slug}`,
       lastModified: service.updatedAt
         ? new Date(service.updatedAt)
@@ -45,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 
   const servicesLocationRoutes: MetadataRoute.Sitemap =
-    serviceLocation?.map((service: any) => ({
+    serviceLocation?.map((service: ServiceLocation) => ({
       url: `${baseUrl}/blog/${service.slug}`,
       lastModified: service.updatedAt
         ? new Date(service.updatedAt)

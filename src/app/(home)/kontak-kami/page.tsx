@@ -1,22 +1,27 @@
 "use client";
+
 import axios from "axios";
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 declare global {
   interface Window {
-    grecaptcha: any;
+    grecaptcha?: unknown;
   }
 }
+
+type SubmitResult =
+  | { success: true; message?: string }
+  | { success: false; error: string };
 
 export default function Page() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<SubmitResult | null>(null);
   const { executeRecaptcha } = useGoogleReCaptcha();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -28,10 +33,8 @@ export default function Page() {
     }
 
     try {
-      // Jalankan reCAPTCHA
       const gRecaptchaToken = await executeRecaptcha("inquirySubmit");
 
-      // Kirim token ke backend untuk verifikasi
       await axios.post(
         "/api/recaptchaSubmit",
         { gRecaptchaToken },
@@ -43,160 +46,168 @@ export default function Page() {
         }
       );
 
-      // Kirim email
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName, email, message }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as SubmitResult;
       setResult(data);
 
-      // Reset form
-      setFirstName("");
-      setEmail("");
-      setMessage("");
-    } catch (err: any) {
-      setResult({
-        success: false,
-        error: err?.response?.data?.error || "Gagal mengirim pesan",
-      });
+      if (data?.success) {
+        setFirstName("");
+        setEmail("");
+        setMessage("");
+      }
+    } catch (error: unknown) {
+      let errorMessage = "Gagal mengirim pesan";
+      if (axios.isAxiosError<{ error?: string }>(error)) {
+        errorMessage = error.response?.data?.error || errorMessage;
+      }
+      setResult({ success: false, error: errorMessage });
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <>
-      <div className="px-4 sm:px-6 py-6 bg-gray-50">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9 }}
-          viewport={{ once: true }}
-          className="text-center text-2xl md:text-2xl font-light text-[#171717]"
-        >
-          Kontak Kami
-        </motion.h2>
+    <main className="min-h-screen bg-slate-50">
+      <div className="page-container page-section">
+        <header className="page-header text-center">
+          <h1 className="text-3xl font-semibold text-slate-900">Kontak Kami</h1>
+          <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
+            Kirim pesan untuk konsultasi kebutuhan las dan konstruksi besi. Tim
+            kami akan membantu memberikan arahan dan estimasi sesuai kebutuhan.
+          </p>
+        </header>
 
-        {/* Grid 2 Kolom */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6">
-          {/* FORM */}
-          <div className="bg-white p-8  shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6">kirim pesan</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <section aria-labelledby="form-kontak" className="bg-white p-8 shadow-sm">
+            <h2 id="form-kontak" className="text-2xl font-semibold text-slate-900">
+              Kirim Pesan
+            </h2>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-5">
               <div className="flex flex-col gap-1">
-                <label className="font-medium">Nama Lengkap</label>
+                <label className="font-medium" htmlFor="nama-lengkap">
+                  Nama Lengkap
+                </label>
                 <input
+                  id="nama-lengkap"
                   type="text"
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="border border-slate-200 px-4 py-2 focus:ring-2 focus:ring-slate-400"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-medium">Email</label>
+                <label className="font-medium" htmlFor="email">
+                  Email
+                </label>
                 <input
+                  id="email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="border border-slate-200 px-4 py-2 focus:ring-2 focus:ring-slate-400"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-medium">Pesan</label>
+                <label className="font-medium" htmlFor="pesan">
+                  Pesan
+                </label>
                 <textarea
+                  id="pesan"
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={5}
-                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                ></textarea>
+                  className="border border-slate-200 px-4 py-2 focus:ring-2 focus:ring-slate-400"
+                />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+                className={`w-full py-3 text-white font-semibold transition ${
                   loading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
+                    ? "bg-slate-400 cursor-not-allowed"
+                    : "bg-slate-900 hover:bg-slate-800"
                 }`}
               >
                 {loading ? "Mengirim..." : "Kirim Email"}
               </button>
             </form>
 
-            {result && (
+            {result ? (
               <div
-                className={`mt-6 p-4 rounded-lg text-sm border ${
-                  result?.success
-                    ? "bg-green-50 border-green-300"
-                    : "bg-red-50 border-red-300"
+                className={`mt-6 p-4 text-sm ${
+                  result.success ? "bg-emerald-50" : "bg-rose-50"
                 }`}
               >
-                <strong>Response:</strong>
-                <pre className="mt-2 whitespace-pre-wrap text-xs">
-                  {JSON.stringify(result, null, 2)}
-                </pre>
+                {result.success ? (
+                  <p className="text-emerald-800">
+                    Pesan berhasil terkirim. Kami akan segera menghubungi Anda.
+                  </p>
+                ) : (
+                  <p className="text-rose-800">{result.error}</p>
+                )}
               </div>
-            )}
-          </div>
+            ) : null}
+          </section>
 
-          {/* KONTAK & MAP */}
           <div className="space-y-6">
-            {/* Informasi Kontak */}
-            <div className="bg-white p-8  shadow-lg">
-              <h2 className="text-2xl font-semibold mb-6">Informasi Kontak</h2>
+            <section aria-labelledby="info-kontak" className="bg-white p-8 shadow-sm">
+              <h2 id="info-kontak" className="text-2xl font-semibold text-slate-900">
+                Informasi Kontak
+              </h2>
 
-              <ul className="space-y-4 text-gray-700 text-base">
+              <ul className="mt-6 space-y-4 text-slate-700">
                 <li>
-                  <strong>📍 Alamat:</strong>
+                  <strong>Alamat:</strong>
                   <br />
                   Pekayon Jaya, Kec. Bekasi Sel., jl.masjid jami nurul mutaqin,
                   RT.03/RW.04, Kota Bks, Jawa Barat 17148
                 </li>
                 <li>
-                  <strong>📞 Telepon:</strong>
+                  <strong>Telepon:</strong>
                   <br />
                   <a
                     href="tel:+6281283993386"
-                    className="text-blue-600 hover:underline"
+                    className="text-slate-900 underline underline-offset-4"
                   >
                     +62 812-8399-3396
                   </a>
                 </li>
                 <li>
-                  <strong>🕒 Jam Operasional:</strong>
+                  <strong>Jam Operasional:</strong>
                   <br />
-                  Senin – Sabtu: 08.00 – 17.00
+                  Senin - Sabtu: 08.00 - 17.00
                 </li>
               </ul>
-            </div>
+            </section>
 
-            {/* Google Maps */}
-            <div className="bg-white  shadow-lg overflow-hidden">
+            <section aria-label="Peta lokasi" className="bg-white shadow-sm overflow-hidden">
               <iframe
                 width="100%"
                 height="300"
-                className="rounded-lg"
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 sandbox="allow-scripts allow-same-origin"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31728.01505782536!2d106.95669327384631!3d-6.2634807737853535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698de549e7328d%3A0x967837da2387e2d!2sIndri%20teknik%20las!5e0!3m2!1sen!2sid!4v1764565697074!5m2!1sen!2sid"
                 title="Lokasi Indri Teknik Las"
-              ></iframe>
-            </div>
+              />
+            </section>
           </div>
         </div>
       </div>
-      {/* <Footer /> */}
-    </>
+    </main>
   );
 }
+

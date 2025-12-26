@@ -12,13 +12,13 @@ export function NavigationMenu() {
         aria-label="Navigasi Utama"
       >
         {/* LOGO / BRAND */}
-        <a
+        <Link
           href="/"
           className="text-xl text-light flex gap-3 items-center"
           aria-label="Indri Teknik Las - Beranda"
         >
           <span>Indri Teknik Las</span>
-        </a>
+        </Link>
 
         {/* DESKTOP MENU */}
         <div className="hidden md:block">

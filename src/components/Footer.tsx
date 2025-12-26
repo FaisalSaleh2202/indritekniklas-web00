@@ -1,9 +1,3 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import NavigationDropdown from "./NavigationDropdown";
 
 export default function Footer() {
@@ -58,7 +52,7 @@ export default function Footer() {
 
               {/* Layanan */}
               <div className="space-y-3 text-red">
-                <NavigationDropdown />
+                <NavigationDropdown variant="list" />
               </div>
             </div>
           </div>
@@ -69,61 +63,56 @@ export default function Footer() {
               Pertanyaan yang Sering Diajukan (F.A.Q)
             </h3>
 
-            <Accordion
-              className="bg-[#212121] text-2lg"
-              type="single"
-              collapsible
-              defaultValue="item-1"
-            >
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+            <div className="space-y-3">
+              <details className="rounded-md border border-white/10 p-3">
+                <summary className="cursor-pointer bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent font-medium">
                   Apakah gratis ongkos kirim?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Ya, kami menyediakan gratis ongkir .
-                </AccordionContent>
-              </AccordionItem>
+                </summary>
+                <p className="mt-2 text-sm text-gray-200">
+                  Ya, kami menyediakan gratis ongkir.
+                </p>
+              </details>
 
-              <AccordionItem value="item-4">
-                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+              <details className="rounded-md border border-white/10 p-3">
+                <summary className="cursor-pointer bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent font-medium">
                   Apakah menerima custom desain?
-                </AccordionTrigger>
-                <AccordionContent>
+                </summary>
+                <p className="mt-2 text-sm text-gray-200">
                   Ya, kami bisa membuat sesuai desain dari pelanggan atau
                   membantu membuatkan desain baru.
-                </AccordionContent>
-              </AccordionItem>
+                </p>
+              </details>
 
-              <AccordionItem value="item-6">
-                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+              <details className="rounded-md border border-white/10 p-3">
+                <summary className="cursor-pointer bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent font-medium">
                   Apakah menerima panggilan ke lokasi?
-                </AccordionTrigger>
-                <AccordionContent>
+                </summary>
+                <p className="mt-2 text-sm text-gray-200">
                   Ya, kami menyediakan jasa panggilan ke lokasi untuk survei
                   maupun pengerjaan langsung.
-                </AccordionContent>
-              </AccordionItem>
+                </p>
+              </details>
 
-              <AccordionItem value="item-7">
-                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+              <details className="rounded-md border border-white/10 p-3">
+                <summary className="cursor-pointer bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent font-medium">
                   Material apa saja yang tersedia?
-                </AccordionTrigger>
-                <AccordionContent>
+                </summary>
+                <p className="mt-2 text-sm text-gray-200">
                   Kami menyediakan besi hollow, besi siku, plat, stainless,
                   galvanis, dan material lainnya.
-                </AccordionContent>
-              </AccordionItem>
+                </p>
+              </details>
 
-              <AccordionItem value="item-8">
-                <AccordionTrigger className="bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent">
+              <details className="rounded-md border border-white/10 p-3">
+                <summary className="cursor-pointer bg-gradient-to-r from-[#E99C3D] to-white bg-clip-text text-transparent font-medium">
                   Apakah harga bisa dinegosiasi?
-                </AccordionTrigger>
-                <AccordionContent>
+                </summary>
+                <p className="mt-2 text-sm text-gray-200">
                   Bisa. Harga disesuaikan dengan material, ukuran, tingkat
                   kesulitan, dan anggaran pelanggan.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </p>
+              </details>
+            </div>
           </div>
         </div>
       </footer>

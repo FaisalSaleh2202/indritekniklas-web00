@@ -1,19 +1,21 @@
 "use client";
 
 import { BlocksRenderer } from "@strapi/blocks-react-renderer";
+import type { BlocksContent } from "@strapi/blocks-react-renderer";
 import React from "react";
 
 interface Props {
-  content: any;
+  content?: BlocksContent | unknown[] | null;
 }
 
 export default function ServiceBlocksRenderer({ content }: Props) {
-  if (!Array.isArray(content)) return null;
+  const blocks = Array.isArray(content) ? (content as BlocksContent) : null;
+  if (!blocks?.length) return null;
 
   return (
     <div className="prose prose-lg max-w-none">
       <BlocksRenderer
-        content={content}
+        content={blocks}
         blocks={{
           heading: ({ children, level }) =>
             React.createElement(

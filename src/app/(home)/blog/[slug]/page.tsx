@@ -1,7 +1,5 @@
 // app/blog/[slug]/page.tsx
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
+export const revalidate = 3600;
 import ServiceBlocksRenderer from "@/components/ServiceBlocksRenderer";
 import SocialShare from "@/components/SocialShare";
 import {
@@ -14,12 +12,60 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getServiceLocationBySlug } from "@/lib/strapi/service-location/service-location.service";
 import { getAllServices } from "@/lib/strapi/service/service.service";
+import type { RichTextNode, Service, ServiceLocation } from "@/lib/strapi/types";
 import { formatDate } from "@/lib/utils";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 // export const revalidate = 3600;
+
+function replaceAreaNameText(text: string, areaName: string) {
+  if (!text) return text;
+  return text.replace(
+    /(Area Layanan Bengkel Las\s+)([^()]+)(\s*\([^)]*\))?/i,
+    (_match, prefix, _oldName, suffix) => `${prefix}${areaName}${suffix || ""}`
+  );
+}
+
+function replaceAreaNameInBlocks(
+  nodes: RichTextNode[] | undefined,
+  areaName: string
+): RichTextNode[] | undefined {
+  if (!nodes) return nodes;
+  return nodes.map((node) => ({
+    ...node,
+    text: node.text ? replaceAreaNameText(node.text, areaName) : node.text,
+    children: replaceAreaNameInBlocks(node.children, areaName),
+  }));
+}
+
+function extractPlainText(nodes?: RichTextNode[]): string {
+  if (!nodes) return "";
+  const parts: string[] = [];
+  const walk = (items: RichTextNode[]) => {
+    for (const item of items) {
+      if (item.text) parts.push(item.text);
+      if (item.children?.length) walk(item.children);
+    }
+  };
+  walk(nodes);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function getFirstParagraphText(nodes?: RichTextNode[]): string {
+  if (!nodes) return "";
+  const paragraph = nodes.find((node) => node.type === "paragraph");
+  return paragraph ? extractPlainText([paragraph]) : "";
+}
+
+function toMetaDescription(text: string, max = 160) {
+  if (!text) return "";
+  if (text.length <= max) return text;
+  const safeMax = Math.max(0, max - 3);
+  return `${text.slice(0, safeMax).trim()}...`;
+}
 
 export async function generateMetadata({
   params,
@@ -27,38 +73,60 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const serviceLocations = await getServiceLocationBySlug(slug);
+  const serviceLocation = (await getServiceLocationBySlug(
+    slug
+  )) as ServiceLocation | null;
 
-  if (!serviceLocations) {
+  if (!serviceLocation) {
     return { title: "Layanan Tidak Ditemukan" };
   }
 
-  // const img = service.thumbnail?.url
-  //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
-  //   : undefined;
+  const thumbnailUrl = serviceLocation.thumbnail?.[0]?.url
+    ? process.env.STRAPI_URL + serviceLocation.thumbnail[0].url
+    : undefined;
+  const plainText = extractPlainText(serviceLocation.description);
+  const metaDescription = toMetaDescription(
+    plainText ||
+      `Bengkel Las ${serviceLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
+  );
+  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${serviceLocation.slug}`;
 
   return {
     title: {
-      default: `${serviceLocations.title}`,
+      default: `${serviceLocation.title}`,
       template: "%s - las terdekat",
     },
     alternates: {
-      canonical: `https://bengkellasindriteknik.com/blog/${serviceLocations.slug}`,
+      canonical: canonicalUrl,
     },
     robots:
       "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
-    description: `Bengkel Las ${serviceLocations.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri.`,
+    description: metaDescription,
     openGraph: {
-      title: `Bengkel Las ${serviceLocations.title}`,
-      description: `Bengkel Las ${serviceLocations.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri..`,
+      title: `Bengkel Las ${serviceLocation.title}`,
+      description: metaDescription,
       type: "article",
       locale: "id",
-      url: `https://bengkellasindriteknik.com/blog/${serviceLocations.slug}`,
-      siteName: `Bengkel Las ${serviceLocations.title}`,
+      url: canonicalUrl,
+      siteName: "Bengkel Las Indri Teknik",
+      images: thumbnailUrl
+        ? [
+            {
+              url: thumbnailUrl,
+              width: 1200,
+              height: 630,
+              alt: serviceLocation.title,
+            },
+          ]
+        : undefined,
     },
-    metadataBase: new URL(
-      `https://bengkellasindriteknik.com/blog/${serviceLocations.slug}`
-    ),
+    twitter: {
+      card: thumbnailUrl ? "summary_large_image" : "summary",
+      title: `Bengkel Las ${serviceLocation.title}`,
+      description: metaDescription,
+      images: thumbnailUrl ? [thumbnailUrl] : undefined,
+    },
+    metadataBase: new URL("https://bengkellasindriteknik.com"),
   };
 }
 
@@ -68,259 +136,402 @@ export default async function BlogDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blogsLocations = await getServiceLocationBySlug(slug);
-  const blogLocation = Array.isArray(blogsLocations)
-    ? blogsLocations[0]
-    : blogsLocations;
+  const blogLocation = (await getServiceLocationBySlug(
+    slug
+  )) as ServiceLocation | null;
   if (!blogLocation) notFound();
 
-  const list = blogLocation.description
-    ?.filter((b: any) => b.type === "list")
-    .slice(0, 4);
-
-  const heading2 = blogLocation.description
-    ?.filter((b: any) => b.type === "heading" && b.level === 2)
-    .slice(0, 1);
-
   const openingParagraph = blogLocation.description
-    ?.filter((b: any) => b.type === "paragraph")
+    ?.filter((b) => b.type === "paragraph")
     .slice(0, 2);
 
   const thumbnailUrl = blogLocation.thumbnail?.[0]?.url
     ? process.env.STRAPI_URL + blogLocation.thumbnail[0].url
     : null;
+  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${blogLocation.slug}`;
+  const contentBlocks = replaceAreaNameInBlocks(
+    blogLocation.description || openingParagraph,
+    blogLocation.title
+  );
+  const plainText = extractPlainText(contentBlocks);
+  const metaDescription = toMetaDescription(
+    plainText ||
+      `Bengkel Las ${blogLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
+  );
 
-  const serviceList = await getAllServices();
+  const serviceList: Service[] = await getAllServices();
 
   return (
     <div className="min-h-screen">
-      <header className="py-6 bg-gray-50">
-        <div className="mx-auto px-6 mb-6">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Blog</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{blogLocation.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+      <Script
+        id="blog-breadcrumb-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://bengkellasindriteknik.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Blog",
+                item: "https://bengkellasindriteknik.com/blog",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: blogLocation.title,
+                item: canonicalUrl,
+              },
+            ],
+          }),
+        }}
+      />
+      <Script
+        id="blog-article-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: blogLocation.title,
+            description: metaDescription,
+            image: thumbnailUrl || undefined,
+            datePublished: blogLocation.createdAt,
+            dateModified: blogLocation.updatedAt || blogLocation.createdAt,
+            author: {
+              "@type": "Organization",
+              name: "Indri Teknik Las Team",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "Indri Teknik Las",
+            },
+            mainEntityOfPage: canonicalUrl,
+          }),
+        }}
+      />
+      <header className="bg-gray-50">
+        <div className="page-container page-header">
+          <nav aria-label="Breadcrumb" className="mb-6">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/blog">Blog</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{blogLocation.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </nav>
 
-        <div className="mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mx-auto max-w-4xl">
             {blogLocation.title}
           </h1>
         </div>
       </header>
-      <div className="md:w-3/4 mx-auto">
-        {/* META */}
-        <section className="px-4 pt-3 text-sm text-gray-700">
-          <span>{formatDate(blogLocation.createdAt)}</span>,{" "}
-          <span>Indri Teknik Las Team</span>
-          <br />
-          <span className="text-gray-500">Waktu Membaca 3 Menit</span>
-        </section>
 
-        {/* CONTENT */}
-        <main className="py-6 px-4">
-          <article className="grid gap-12">
-            {/* IMAGE */}
-            <figure>
-              {thumbnailUrl ? (
-                <Image
-                  src={thumbnailUrl}
-                  alt={blogLocation.title}
-                  width={600}
-                  height={400}
-                  loading="eager"
-                  className="shadow-md object-contain w-full"
-                />
-              ) : (
-                <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
-              )}
-
-              <figcaption className="sr-only">{blogLocation.title}</figcaption>
-            </figure>
-
-            {/* OPENING PARAGRAPH */}
-            <div>
-              <ServiceBlocksRenderer content={openingParagraph} />
+      <main className="page-container page-section page-stack">
+        <article className="mx-auto max-w-4xl page-stack">
+          <header className="text-sm text-gray-700">
+            <div className="flex flex-wrap items-center gap-2">
+              <time dateTime={new Date(blogLocation.createdAt).toISOString()}>
+                {formatDate(blogLocation.createdAt)}
+              </time>
+              <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
+              <span>Indri Teknik Las Team</span>
+              <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
+              <span className="text-gray-500">Waktu Membaca 3 Menit</span>
             </div>
-          </article>
-        </main>
+          </header>
 
-        <section className="px-3 py-6">
+          <figure>
+            {thumbnailUrl ? (
+              <Image
+                src={thumbnailUrl}
+                alt={blogLocation.title}
+                width={960}
+                height={640}
+                loading="eager"
+                className="object-contain w-full"
+              />
+            ) : (
+              <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
+            )}
+
+            <figcaption className="sr-only">{blogLocation.title}</figcaption>
+          </figure>
+
+          <div>
+            <ServiceBlocksRenderer content={contentBlocks} />
+          </div>
+        </article>
+
+        <section aria-labelledby="layanan-terkait">
+          <header className="mb-4">
+            <h2 id="layanan-terkait" className="text-xl font-semibold text-gray-900">
+              Layanan Terkait
+            </h2>
+          </header>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {serviceList.map((service: any) => (
-              <article
-                key={service.id}
-                className="relative overflow-hidden shadow-sm hover:shadow-md transition"
-              >
-                {/* Thumbnail */}
-                {service.thumbnail?.url && (
-                  <div className="relative w-full h-64 md:h-72">
-                    <Image
-                      src={process.env.STRAPI_URL + service.thumbnail.url}
-                      alt={service.title}
-                      width={500}
-                      height={400}
-                      className="object-cover w-full h-full"
-                      loading="eager"
-                    />
+            {serviceList.map((service) => {
+              const href = service.slug ? `/jasa-las/${service.slug}` : "/jasa-las";
+              const imgUrl = service.thumbnail?.url
+                ? process.env.STRAPI_URL + service.thumbnail.url
+                : null;
 
-                    {/* Title overlay */}
-                    <div className="absolute bottom-0 w-full bg-black/50 backdrop-blur-sm text-white p-3">
-                      <h3 className="text-lg md:text-xl font-semibold">
-                        {service.title}
-                      </h3>
+              return (
+                <Link
+                  key={service.id}
+                  href={href}
+                  className="group relative overflow-hidden bg-gray-100"
+                >
+                  {imgUrl ? (
+                    <div className="relative w-full h-64 md:h-72">
+                      <Image
+                        src={imgUrl}
+                        alt={service.title}
+                        width={500}
+                        height={400}
+                        className="object-cover w-full h-full"
+                        loading="eager"
+                      />
+                      <div className="absolute bottom-0 w-full bg-black/50 backdrop-blur-sm text-white p-3">
+                        <h3 className="text-lg md:text-xl font-semibold">
+                          {service.title}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </article>
-            ))}
+                  ) : (
+                    <div className="w-full h-64 md:h-72 bg-gray-200" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </section>
 
-        <section className="px-3">
-          <header>
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Jasa Kami</h2>
+        <section aria-labelledby="jasa-kami">
+          <header className="mb-4">
+            <h2 id="jasa-kami" className="text-2xl font-bold mb-2 text-gray-800">
+              Jasa Kami
+            </h2>
+            <p className="text-gray-600">
+              Jelajahi layanan las yang mendukung kebutuhan pagar, kanopi,
+              railing, dan konstruksi ringan di area Anda.
+            </p>
           </header>
 
-          <div className="space-y-6">
-            {serviceList.map((service: any) => {
-              const list =
-                service.description
-                  ?.filter((b: any) => b.type === "list")
-                  .slice(1, 2) || [];
+          <div className="divide-y divide-gray-200">
+            {serviceList.map((service) => {
+              const listNodes = (service.description ?? [])
+                .filter((b) => b.type === "list")
+                .slice(1, 2);
+              const listItems = listNodes
+                .flatMap((node) =>
+                  (node.children ?? []).map((child) =>
+                    extractPlainText(child.children)
+                  )
+                )
+                .filter(Boolean);
+              const summary = toMetaDescription(
+                getFirstParagraphText(service.description),
+                150
+              );
+              const serviceHref = service.slug
+                ? `/jasa-las/${service.slug}`
+                : "/jasa-las";
 
               return (
-                <article
-                  key={service.id}
-                  className="border rounded-xl p-5 shadow-sm bg-white hover:shadow-md transition"
-                >
+                <article key={service.id} className="py-6 first:pt-0">
                   <header>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      {service.title}
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      <Link
+                        href={serviceHref}
+                        className="hover:underline underline-offset-4"
+                      >
+                        {service.title}
+                      </Link>
                     </h3>
                   </header>
-
-                  <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                    {list.map((l: any, i: number) =>
-                      l.children.map((li: any, idx: number) => (
-                        <li key={`${i}-${idx}`}>
-                          {li.children.map((t: any) => t.text).join("")}
-                        </li>
-                      ))
-                    )}
-                  </ul>
+                  {summary ? (
+                    <p className="text-gray-700 mt-2 leading-relaxed">
+                      {summary}
+                    </p>
+                  ) : null}
+                  {listItems.length ? (
+                    <ul className="mt-3 space-y-2 text-gray-700 list-disc list-inside">
+                      {listItems.map((item, index) => (
+                        <li key={`${service.id}-${index}`}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <div className="mt-3">
+                    <Link
+                      href={serviceHref}
+                      className="text-sm font-semibold text-gray-900 underline underline-offset-4 hover:text-gray-700"
+                    >
+                      Detail layanan
+                    </Link>
+                  </div>
                 </article>
               );
             })}
           </div>
         </section>
 
-        <section className="px-3 py-10 max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
-            Jenis-jenis Besi Berkualitas dari Indri Teknik Las
-          </h2>
+        <section aria-labelledby="jenis-besi">
+          <header className="text-center mb-8">
+            <h2
+              id="jenis-besi"
+              className="text-3xl font-bold mb-3 text-gray-800"
+            >
+              Jenis-jenis Besi Berkualitas dari Indri Teknik Las
+            </h2>
+            <p className="text-gray-700 max-w-3xl mx-auto">
+              Setiap proyek membutuhkan material yang berbeda. Kami membantu
+              memilih jenis besi yang tepat agar pagar, kanopi, railing, dan
+              konstruksi ringan tetap kuat, rapi, dan awet di iklim tropis.
+            </p>
+          </header>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Besi Hollow */}
-            <article className="bg-white shadow-sm rounded-xl p-5 hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                Besi Hollow – Hollow Galvalume
+            <article className="pb-6 border-b border-gray-200 last:border-b-0">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                Besi Hollow Galvalume
               </h3>
-              <p className="text-gray-700 mb-2">
-                Besi Hollow Galvalume menggunakan material hollow galvanis
-                berlapis aluminium-zinc yang <strong>tahan karat</strong>,{" "}
+              <p className="text-gray-700">
+                Hollow galvalume adalah besi hollow galvanis dengan lapisan
+                aluminium-zinc yang <strong>tahan karat</strong>,{" "}
                 <strong>tahan cuaca</strong>, dan{" "}
-                <strong>minim perawatan</strong>. Dengan karakter ringan namun
-                kuat, material ini menjadi pilihan ideal untuk{" "}
-                <strong>rumah minimalis</strong>, <strong>perumahan</strong>,
-                maupun <strong>bangunan komersial</strong> dengan tampilan
-                modern dan bersih.
+                <strong>mudah perawatan</strong>. Material ini ringan namun
+                tetap kuat, cocok untuk desain modern dengan garis rapi.
               </p>
+              <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
+                <li>Rangka kanopi dan atap ringan</li>
+                <li>Pagar minimalis dan railing balkon</li>
+                <li>Partisi atau rangka plafon</li>
+              </ul>
             </article>
 
             {/* Besi Vial */}
-            <article className="bg-white shadow-sm rounded-xl p-5 hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+            <article className="pb-6 border-b border-gray-200 last:border-b-0">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">
                 Besi Vial
               </h3>
-              <p className="text-gray-700 mb-2">
-                Besi Vial terbuat dari material besi solid berbentuk batang
-                vertikal yang tersusun rapi. Material ini dikenal sangat{" "}
-                <strong>kokoh</strong>, <strong>tidak mudah bengkok</strong>,
-                dan memberikan <strong>tingkat keamanan tinggi</strong>.
-                Desainnya tegas dan simetris membuat Besi Vial tampil{" "}
-                <strong>elegan</strong> dan cocok untuk{" "}
-                <strong>rumah modern</strong>, <strong>ruko</strong>, atau{" "}
-                <strong>area perkantoran</strong>.
+              <p className="text-gray-700">
+                Besi vial menggunakan batang besi solid dengan susunan vertikal
+                yang rapi. Karakternya <strong>kokoh</strong>,{" "}
+                <strong>tidak mudah bengkok</strong>, dan memberi{" "}
+                <strong>keamanan tinggi</strong> tanpa mengurangi tampilan
+                elegan.
               </p>
+              <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
+                <li>Pagar rumah dan gerbang utama</li>
+                <li>Teralis jendela atau area servis</li>
+                <li>Railing tangga dan balkon</li>
+              </ul>
             </article>
 
             {/* Besi Galvanis */}
-            <article className="bg-white shadow-sm rounded-xl p-5 hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+            <article className="pb-6 border-b border-gray-200 last:border-b-0">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">
                 Besi Galvanis
               </h3>
-              <p className="text-gray-700 mb-2">
-                Besi Galvanis menggunakan lembaran plat yang diberi lapisan
-                galvanis sehingga{" "}
-                <strong>tahan terhadap korosi dan karat</strong>. Material ini
-                kuat menghadapi cuaca ekstrem dan ideal untuk privasi atau
-                tampilan tertutup yang rapi. Besi Galvanis sering dipilih untuk{" "}
-                <strong>area industri</strong>, <strong>gudang</strong>,{" "}
-                <strong>ruko</strong>, hingga{" "}
-                <strong>rumah minimalis modern</strong>.
+              <p className="text-gray-700">
+                Besi galvanis menggunakan plat dengan lapisan pelindung sehingga{" "}
+                <strong>tahan korosi</strong> dan stabil di cuaca ekstrem.
+                Material ini cocok untuk tampilan pagar tertutup yang rapi dan
+                privasi yang lebih baik.
               </p>
+              <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
+                <li>Pagar tertutup dan panel pelindung</li>
+                <li>Pintu geser atau pintu lipat</li>
+                <li>Area industri, ruko, dan gudang</li>
+              </ul>
             </article>
 
             {/* BRC */}
-            <article className="bg-white shadow-sm rounded-xl p-5 hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">BRC</h3>
-              <p className="text-gray-700 mb-2">
-                BRC dibuat dari besi U-50 dengan proses las otomatis,
-                menghasilkan struktur yang <strong>kuat dan simetris</strong>.
-                Bagian ujung yang dibengkokkan (roll top) menambah{" "}
-                <strong>kekuatan dan keamanan</strong>. Material ini banyak
-                digunakan untuk <strong>proyek perumahan</strong>,{" "}
-                <strong>pabrik</strong>, <strong>sekolah</strong>,{" "}
-                <strong>fasilitas publik</strong>, dan area komersial yang
-                membutuhkan keamanan stabil dengan biaya ekonomis.
+            <article className="pb-6 border-b border-gray-200 last:border-b-0">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">BRC</h3>
+              <p className="text-gray-700">
+                BRC adalah wiremesh dengan las otomatis sehingga ukuran grid
+                rapi dan konsisten. Ujung roll top menambah{" "}
+                <strong>keamanan</strong> dan <strong>kekuatan</strong>, sekaligus
+                mempercepat pemasangan di lapangan.
               </p>
+              <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
+                <li>Perumahan, sekolah, dan fasilitas publik</li>
+                <li>Pabrik, gudang, dan area parkir</li>
+                <li>Pagar taman atau pembatas lahan</li>
+              </ul>
             </article>
 
             {/* Lain-lain */}
-            <article className="bg-white shadow-sm rounded-xl p-5 hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+            <article className="pb-6 border-b border-gray-200 last:border-b-0">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">
                 Lain-lain
               </h3>
-              <p className="text-gray-700 mb-2">
-                Kami juga menyediakan jenis besi lainnya sesuai permintaan,
-                disesuaikan dengan kebutuhan desain, ukuran, dan tingkat
-                keamanan Anda.
+              <p className="text-gray-700">
+                Untuk proyek khusus, kami juga menangani material lain sesuai
+                kebutuhan desain, ukuran, dan tingkat keamanan yang Anda
+                butuhkan.
               </p>
+              <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
+                <li>Besi siku, UNP, CNP, dan plat sesuai spesifikasi</li>
+                <li>Material custom setelah survei dan konsultasi</li>
+              </ul>
             </article>
           </div>
         </section>
 
-        {/* Social Share */}
-        <SocialShare
-          url={typeof window !== "undefined" ? window.location.href : ""}
-        />
-      </div>
+        <section aria-label="Konsultasi" className="pb-2">
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Butuh Rekomendasi Material Pagar yang Tepat?
+              </h2>
+              <p className="text-gray-700 mt-2">
+                Konsultasi langsung dengan tim Indri Teknik Las untuk menentukan
+                material, ukuran, dan desain yang sesuai kebutuhan proyek Anda.
+              </p>
+            </div>
+            <a
+              href="https://wa.me/6281283993386"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Konsultasi via WhatsApp"
+              className="inline-flex items-center justify-center rounded-full bg-green-500 text-black px-6 py-3 font-semibold shadow-lg hover:bg-green-600 transition"
+            >
+              Konsultasi via WhatsApp
+            </a>
+          </div>
+        </section>
+
+        <footer aria-label="Bagikan artikel">
+          <SocialShare
+            url={typeof window !== "undefined" ? window.location.href : ""}
+          />
+        </footer>
+      </main>
     </div>
   );
 }

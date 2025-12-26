@@ -3,9 +3,8 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
-import { getAllBlogs } from "@/lib/strapi/blog/blog.service";
 import { getAllServiceLocations } from "@/lib/strapi/service-location/service-location.service";
-import { getAllServices } from "@/lib/strapi/service/service.service";
+import type { ServiceLocation } from "@/lib/strapi/types";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,36 +12,41 @@ import Link from "next/link";
 // export const revalidate = 3600;
 
 export default async function BlogPage() {
-  const blogs = await getAllBlogs();
   const serviceLocations = await getAllServiceLocations();
-  const services = await getAllServices();
 
   if (!serviceLocations || serviceLocations.length === 0) {
     return (
-      <>
-        <div className="max-w-6xl mx-auto py-20 text-center">
-          <p className="text-xl text-gray-600">Belum ada artikel saat ini.</p>
-        </div>
-      </>
+      <main className="page-container page-section">
+        <header className="page-header text-center">
+          <h1 className="text-3xl font-semibold text-gray-900">Blog</h1>
+          <p className="mt-3 text-gray-600">Belum ada artikel saat ini.</p>
+        </header>
+      </main>
     );
   }
 
   const latest = serviceLocations[0];
   const topReads = serviceLocations.slice(1, 4);
 
-  const getImageUrl = (blog: any) => {
+  const getImageUrl = (blog: ServiceLocation) => {
     const thumbnail = blog.thumbnail?.[0];
     return thumbnail ? `${process.env.STRAPI_URL}${thumbnail.url}` : null;
   };
 
   return (
-    <>
-      <div className="max-w-6xl mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <main className="page-container page-section">
+      <header className="page-header">
+        <h1 className="text-3xl font-semibold text-gray-900">Blog</h1>
+        <p className="mt-3 text-gray-600">
+          Artikel terbaru seputar layanan las, material besi, dan tips perawatan.
+        </p>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* THE LATEST */}
           <div className="md:col-span-2">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">
-              The Latest
+            <h2 id="the-latest" className="text-2xl font-semibold mb-6 text-gray-900">
+              Artikel Terbaru
             </h2>
             <Link
               href={`/blog/${latest.slug}`}
@@ -77,7 +81,9 @@ export default async function BlogPage() {
 
           {/* TOP READS */}
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Top Reads</h2>
+            <h2 id="top-reads" className="text-2xl font-semibold mb-6 text-gray-900">
+              Top Reads
+            </h2>
             <div className="space-y-4">
               {topReads.map((blog) => (
                 <Link
@@ -108,8 +114,7 @@ export default async function BlogPage() {
               ))}
             </div>
           </div>
-        </div>
       </div>
-    </>
+    </main>
   );
 }

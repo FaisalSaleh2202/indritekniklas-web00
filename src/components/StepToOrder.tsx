@@ -1,18 +1,3 @@
-"use client";
-
-import {
-  Stepper,
-  StepperContent,
-  StepperIndicator,
-  StepperItem,
-  StepperNav,
-  StepperPanel,
-  StepperTitle,
-  StepperTrigger,
-} from "@/components/ui/stepper";
-import { motion } from "framer-motion";
-import { Check, LoaderCircleIcon } from "lucide-react";
-
 const steps = [
   {
     title: "Pastikan Kebutuhan Anda",
@@ -35,85 +20,61 @@ const steps = [
   },
 ];
 
-export default function StepToOrder() {
+type StepToOrderProps = {
+  variant?: "default" | "clean";
+};
+
+export default function StepToOrder({ variant = "default" }: StepToOrderProps) {
+  const isClean = variant === "clean";
+  const containerClassName = isClean
+    ? "mx-auto max-w-6xl"
+    : "mx-auto max-w-6xl rounded-3xl border border-gray-200 bg-gradient-to-br from-white via-white to-amber-50/40 p-6 md:p-10 shadow-sm";
+  const itemClassName = isClean
+    ? "flex gap-4 bg-slate-100/60 p-5"
+    : "flex gap-4 rounded-2xl border border-gray-200 bg-white/80 p-5 shadow-sm";
+  const badgeClassName = isClean
+    ? "flex h-10 w-10 shrink-0 items-center justify-center bg-amber-100 text-[#D67A00] font-semibold"
+    : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white text-[#D67A00] font-semibold";
+
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true }}
-      className="px-4 sm:px-6 py-6 bg-gray-50"
-    >
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="max-w-4xl mx-auto text-center my-auto">
-          <h2 className="text-center text-2xl md:text-2xl font-light text-[#171717] mb-3">
-            Proses Pemesanan
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            Ikuti langkah-langkah berikut untuk memesan layanan kami dengan
-            mudah dan cepat.
-          </p>
-        </div>
+    <section className="px-4 sm:px-6 py-10">
+      <div className={containerClassName}>
+        <div className="grid gap-8 md:grid-cols-[1.1fr_1.4fr] items-start">
+          <header className="space-y-3">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#D67A00]">
+              Langkah Pemesanan
+            </p>
+            <h2 className="text-2xl md:text-3xl font-semibold text-[#171717]">
+              Proses Pemesanan
+            </h2>
+            <p className="text-slate-600 max-w-xl">
+              Ikuti langkah-langkah berikut untuk memesan layanan kami dengan
+              mudah dan cepat.
+            </p>
+          </header>
 
-        {/* Timeline Elegant */}
-        <div className="flex justify-center">
-          <Stepper
-            className="flex flex-col items-start gap-14"
-            defaultValue={1}
-            orientation="vertical"
-            indicators={{
-              completed: <Check className="size-4" />,
-              loading: <LoaderCircleIcon className="size-4 animate-spin" />,
-            }}
-          >
-            <StepperNav className="relative mx-auto">
-              {/* Garis Utama Timeline */}
-              <div className="absolute top-0 left-3 h-full w-1 bg-gradient-to-b from-[#F7C77F] to-[#D67A00] opacity-40 rounded-full"></div>
-
-              {steps.map((step, index) => (
-                <StepperItem key={index} step={index + 1} className="relative">
-                  <StepperTrigger className="flex items-start gap-4 pb-6 last:pb-6">
-                    {/* Bulatan Indicator Elegan */}
-                    <StepperIndicator
-                      className="
-                      relative z-10 flex items-center justify-center 
-                      w-10 h-10 rounded-full border
-                      bg-white shadow-lg text-[#D67A00] border-[#F7C77F]
-                      data-[state=active]:bg-gradient-to-br
-                      data-[state=active]:from-[#F7C77F]
-                      data-[state=active]:to-[#D67A00]
-                      data-[state=active]:text-white
-                      data-[state=completed]:bg-[#D67A00]
-                      data-[state=completed]:text-white
-                    "
-                    >
-                      {index + 1}
-                    </StepperIndicator>
-
-                    {/* Text */}
-                    <div>
-                      <StepperTitle className="text-xl text-start font-semibold text-[#171717]">
-                        {step.title}
-                      </StepperTitle>
-                      <p className="text-gray-600 text-start text-sm mt-1 max-w-md">
-                        {step.description}
-                      </p>
-                    </div>
-                  </StepperTrigger>
-                </StepperItem>
-              ))}
-            </StepperNav>
-
-            <StepperPanel>
-              {steps.map((step, index) => (
-                <StepperContent key={index} value={index + 1}>
-                  {/* Bisa diisi konten detail jika diperlukan */}
-                </StepperContent>
-              ))}
-            </StepperPanel>
-          </Stepper>
+          <ol className="grid gap-4">
+            {steps.map((step, index) => (
+              <li
+                key={step.title}
+                className={itemClassName}
+              >
+                <span className={badgeClassName}>
+                  {index + 1}
+                </span>
+                <div>
+                  <h3 className="text-lg font-semibold text-[#171717]">
+                    {step.title}
+                  </h3>
+                  <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

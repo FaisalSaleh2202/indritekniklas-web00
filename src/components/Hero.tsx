@@ -34,6 +34,8 @@ const Hero = ({
           alt="Latar belakang bengkel las"
           fill
           priority
+          fetchPriority="high"
+          sizes="100vw"
           className="object-cover"
         />
       </div>
@@ -96,6 +98,7 @@ const Hero = ({
               alt="Hasil pemasangan Railing Tangga"
               width={500}
               height={400}
+              sizes="(max-width: 640px) 90vw, 256px"
               className="object-cover w-full h-full"
             />
           </div>
@@ -109,6 +112,7 @@ const Hero = ({
               alt="Hasil pemasangan kanopi"
               width={600}
               height={450}
+              sizes="(max-width: 640px) 90vw, 288px"
               className="object-cover w-full h-full"
             />
           </div>
@@ -122,6 +126,7 @@ const Hero = ({
               alt="Proses pembuatan rangka besi oleh teknisi"
               width={500}
               height={400}
+              sizes="(max-width: 640px) 90vw, 256px"
               className="object-cover w-full h-full"
             />
           </div>

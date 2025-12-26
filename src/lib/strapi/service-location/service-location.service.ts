@@ -1,27 +1,38 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
 import { fetchFromStrapi } from "../client";
-import { SORT_DATE_DESC } from "../queries";
-import { Service } from "../types";
+import { toArray } from "../normalize";
+import type { ServiceLocation } from "../types";
 
 const endpoint = "/service-locations";
 
-export const getAllServiceLocations = async (): Promise<Service[]> => {
-  const res = await fetchFromStrapi<Service>(
-    `${endpoint}?populate=thumbnail&${SORT_DATE_DESC}`
+const buildServiceLocationListQuery = () => {
+  const params = new URLSearchParams();
+  params.set("populate", "thumbnail");
+  params.set("sort", "publishedAt:desc");
+  return params.toString();
+};
+
+const buildServiceLocationSlugQuery = (slug: string) => {
+  const params = new URLSearchParams();
+  params.set("filters[slug][$eq]", slug);
+  params.set("populate", "*");
+  return params.toString();
+};
+
+export const getAllServiceLocations = async (): Promise<ServiceLocation[]> => {
+  const res = await fetchFromStrapi<ServiceLocation>(
+    `${endpoint}?${buildServiceLocationListQuery()}`
   );
-  return Array.isArray(res.data) ? res.data : [res.data];
+  return toArray(res.data);
 };
 
 export const getServiceLocationBySlug = async (
   slug: string
-): Promise<Service | null> => {
-  const res = await fetchFromStrapi<Service>(
-    `${endpoint}?filters[slug][$eq]=${slug}&populate=*`
+): Promise<ServiceLocation | null> => {
+  const res = await fetchFromStrapi<ServiceLocation>(
+    `${endpoint}?${buildServiceLocationSlugQuery(slug)}`
   );
-  const data = Array.isArray(res.data) ? res.data[0] : res.data;
-  // Kalau tidak ketemu → return null
+  const data = toArray(res.data)[0];
+  // Kalau tidak ketemu return null
   if (!data) return null;
 
   return data;

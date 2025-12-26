@@ -1,4 +1,4 @@
-// app/layanan/[slug]/page.tsx
+// app/jasa-las/[slug]/page.tsx
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
@@ -13,14 +13,54 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { getServiceBySlug } from "@/lib/strapi/service/service.service";
+import {
+  getAllServices,
+  getServiceBySlug,
+} from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";
-import { MessageCircle, Phone } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+type RichTextNode = {
+  type?: string;
+  level?: number;
+  text?: string;
+  children?: RichTextNode[];
+};
+
+function extractPlainText(nodes?: RichTextNode[]): string {
+  if (!nodes) return "";
+  const parts: string[] = [];
+  const walk = (items: RichTextNode[]) => {
+    for (const item of items) {
+      if (item.text) parts.push(item.text);
+      if (item.children?.length) walk(item.children);
+    }
+  };
+  walk(nodes);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function toMetaDescription(text: string, max = 160) {
+  if (!text) return "";
+  if (text.length <= max) return text;
+  const safeMax = Math.max(0, max - 3);
+  return `${text.slice(0, safeMax).trim()}...`;
+}
+
+function extractListItems(listNodes: RichTextNode[]): string[] {
+  const items: string[] = [];
+  for (const listNode of listNodes) {
+    const listItems = listNode.children || [];
+    for (const listItem of listItems) {
+      const text = extractPlainText(listItem.children);
+      if (text) items.push(text);
+    }
+  }
+  return items;
+}
 
 // export async function generateStaticParams() {
 //   const services = await getAllServices();
@@ -41,9 +81,16 @@ export async function generateMetadata({
     return { title: "Layanan Tidak Ditemukan" };
   }
 
-  // const img = service.thumbnail?.url
-  //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
-  //   : undefined;
+  const descriptionText = extractPlainText(service.description);
+  const metaDescription = toMetaDescription(
+    descriptionText ||
+      service.meta_description ||
+      service.short_description ||
+      `Bengkel Las ${service.title} membantu kebutuhan las dan konstruksi ringan sesuai kebutuhan proyek Anda.`
+  );
+  const thumbnailUrl = service.thumbnail?.url
+    ? process.env.STRAPI_URL + service.thumbnail.url
+    : undefined;
 
   return {
     title: {
@@ -55,18 +102,26 @@ export async function generateMetadata({
     },
     robots:
       "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
-    description: `Bengkel Las ${service.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri.`,
+    description: metaDescription,
     openGraph: {
       title: `Bengkel Las ${service.title}`,
-      description: `Bengkel Las ${service.title} Bengkel las kami menyediakan layanan pembuatan Jendela yang kuat, aman, dan estetik untuk kebutuhan rumah, ruko, perumahan, maupun industri..`,
+      description: metaDescription,
       type: "article",
       locale: "id",
       url: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
-      siteName: `Bengkel Las ${service.title}`,
+      siteName: "Bengkel Las Indri Teknik",
+      images: thumbnailUrl
+        ? [
+            {
+              url: thumbnailUrl,
+              width: 1200,
+              height: 630,
+              alt: service.title,
+            },
+          ]
+        : undefined,
     },
-    metadataBase: new URL(
-      `https://bengkellasindriteknik.com/jasa-las/${service.slug}`
-    ),
+    metadataBase: new URL("https://bengkellasindriteknik.com"),
   };
 }
 
@@ -79,29 +134,56 @@ export default async function ServiceDetailPage({
   const service = await getServiceBySlug(slug);
 
   if (!service) notFound();
+  const allServices = await getAllServices();
 
-  const list = service.description
-    ?.filter((b: any) => b.type === "list")
+  const descriptionBlocks: RichTextNode[] = service.description || [];
+  const listBlocks = descriptionBlocks.filter((b) => b.type === "list");
+  const list = listBlocks.slice(0, 1);
+  const heading2 = descriptionBlocks
+    .filter((b) => b.type === "heading" && b.level === 2)
     .slice(0, 1);
-
-  const heading2 = service.description
-    ?.filter((b: any) => b.type === "heading" && b.level === 2)
-    .slice(0, 1);
-
-  const openingParagraph = service.description
-    ?.filter((b: any) => b.type === "paragraph")
+  const openingParagraph = descriptionBlocks
+    .filter((b) => b.type === "paragraph")
     .slice(0, 2);
+  const detailBlocks = descriptionBlocks.filter(
+    (block) =>
+      !openingParagraph.includes(block) &&
+      !heading2.includes(block) &&
+      !list.includes(block)
+  );
+  const fallbackIntro = `Layanan ${service.title} dari Indri Teknik Las dirancang untuk membantu kebutuhan konstruksi ringan dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
+  const thumbnailUrl = service.thumbnail?.url
+    ? process.env.STRAPI_URL + service.thumbnail.url
+    : null;
+  const listItems = extractListItems(listBlocks);
+  const summaryText = toMetaDescription(
+    extractPlainText(descriptionBlocks) ||
+      service.short_description ||
+      fallbackIntro,
+    220
+  );
+  const headerDescription = service.short_description || summaryText;
+  const publishedDate = service.createdAt ? new Date(service.createdAt) : null;
+  const updatedDate = service.updatedAt ? new Date(service.updatedAt) : null;
+  const relatedServices = (allServices || []).filter(
+    (item) => item?.slug && item.slug !== service.slug
+  );
 
   // const thumbnailUrl = service.thumbnail?.url
   //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
   //   : null;
 
+  const jsonLdDescription =
+    extractPlainText(descriptionBlocks) ||
+    service.meta_description ||
+    service.short_description ||
+    fallbackIntro;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.title,
-    description: service.meta_description || service.short_description,
-    image: "https://bengkellasindriteknik.com/opengraph-image.png",
+    description: jsonLdDescription,
+    image: thumbnailUrl || "https://bengkellasindriteknik.com/opengraph-image.png",
     provider: {
       "@type": "LocalBusiness",
       name: "Indri Teknik Las",
@@ -117,7 +199,7 @@ export default async function ServiceDetailPage({
       telephone: "+6281283993386",
       priceRange: "Rp. 550.000",
     },
-    url: `https://www.bengkellasindriteknik.com/layanan/${service.slug}`,
+    url: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
     offers: {
       "@type": "Offer",
       price: "550.000",
@@ -129,103 +211,231 @@ export default async function ServiceDetailPage({
   };
 
   return (
-    <div className="min-h-screen">
-      {/* HERO SECTION */}
-      <header className="py-6 bg-gray-50">
-        <div className="mx-auto px-6 mb-6">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Layanan</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{service.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-transparent">
+        <div className="page-container pt-6">
+          <nav aria-label="Breadcrumb">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/jasa-las">Layanan</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{service.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </nav>
         </div>
 
-        <div className="mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {service.short_description}
+        <div className="page-container pb-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 mt-2 mx-auto max-w-4xl">
+            {service.title}
           </h1>
+          {headerDescription ? (
+            <p className="text-slate-600 mt-3 mx-auto max-w-3xl">
+              {headerDescription}
+            </p>
+          ) : null}
         </div>
       </header>
 
-      <div className="md:w-3/4 mx-auto">
-        {/* META */}
-        <section className="px-4 pt-3 text-sm text-gray-700">
-          <span>{formatDate(service.createdAt)}</span>,{" "}
-          <span>Indri Teknik Las Team</span>
-          <br />
-          <span className="text-gray-500">Waktu Membaca 3 Menit</span>
-        </section>
+      <main className="page-container page-section">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-8">
+          <article className="overflow-hidden">
+            <div className="py-2 md:py-4 space-y-8">
+              <header className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                  {publishedDate ? (
+                    <time dateTime={publishedDate.toISOString()}>
+                      {formatDate(service.createdAt)}
+                    </time>
+                  ) : null}
+                  <span
+                    className="h-1 w-1 bg-slate-300"
+                    aria-hidden="true"
+                  />
+                  <span>Indri Teknik Las Team</span>
+                  {updatedDate ? (
+                    <>
+                      <span
+                        className="h-1 w-1 bg-slate-300"
+                        aria-hidden="true"
+                      />
+                      <time dateTime={updatedDate.toISOString()}>
+                        Diperbarui {formatDate(service.updatedAt)}
+                      </time>
+                    </>
+                  ) : null}
+                  <span
+                    className="h-1 w-1 bg-slate-300"
+                    aria-hidden="true"
+                  />
+                  <span>Waktu Membaca 3 Menit</span>
+                </div>
+              </header>
 
-        {/* CONTENT */}
-        <main className="py-6 px-4">
-          <article className="grid md:grid-cols-2 gap-12">
-            {/* IMAGE */}
-            <figure>
-              {service.thumbnail ? (
-                <Image
-                  src={process.env.STRAPI_URL + service.thumbnail.url}
-                  alt={service.title}
-                  width={600}
-                  height={400}
-                  className="rounded-xl shadow-md object-contain w-full"
-                  loading="eager"
-                />
-              ) : (
-                <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
-              )}
-              <figcaption className="sr-only">{service.title}</figcaption>
-            </figure>
+              <figure className="overflow-hidden bg-gray-100">
+                {thumbnailUrl ? (
+                  <Image
+                    src={thumbnailUrl}
+                    alt={service.title}
+                    width={960}
+                    height={640}
+                    className="h-72 w-full object-cover md:h-96"
+                    loading="eager"
+                  />
+                ) : (
+                  <div className="h-72 w-full bg-gray-200 md:h-96" />
+                )}
+                <figcaption className="sr-only">{service.title}</figcaption>
+              </figure>
 
-            {/* OPENING PARAGRAPH */}
-            <div>
-              <ServiceBlocksRenderer content={openingParagraph} />
-              {/* BUTTON */}
-              <div className="mt-6 grid">
-                <span className="text-center mb-3 font-semibold text-gray-500">
-                  Hubungi Kami Untuk Konsultasi Kebutuhan Anda Sekarang
-                </span>
-
-                <Button
-                  asChild
-                  className="rounded-full font-light shadow-xl inline-flex items-center gap-2 bg-green-500 text-black hover:bg-green-600 transition"
+              <section className="space-y-3" aria-labelledby="ringkasan-layanan">
+                <h2
+                  id="ringkasan-layanan"
+                  className="text-2xl font-semibold text-slate-900"
                 >
-                  <a aria-label="Hubungi via WhatsApp">
-                    Phone / Whatsapp
-                    <Phone aria-hidden="true" />
-                    <MessageCircle aria-hidden="true" />
-                  </a>
-                </Button>
-              </div>
+                  Ringkasan Layanan
+                </h2>
+                <div className="space-y-4 text-slate-700 leading-relaxed">
+                  {openingParagraph.length ? (
+                    <ServiceBlocksRenderer content={openingParagraph} />
+                  ) : (
+                    <p>{fallbackIntro}</p>
+                  )}
+                </div>
+              </section>
+
+              {detailBlocks.length ? (
+                <section className="space-y-3" aria-labelledby="detail-layanan">
+                  <h2
+                    id="detail-layanan"
+                    className="text-2xl font-semibold text-slate-900"
+                  >
+                    Detail Layanan {service.title}
+                  </h2>
+                  <div className="space-y-4 text-slate-700 leading-relaxed">
+                    <ServiceBlocksRenderer content={detailBlocks} />
+                  </div>
+                </section>
+              ) : null}
+
+              <section
+                className="space-y-4"
+                aria-labelledby="keunggulan-layanan"
+              >
+                <h2
+                  id="keunggulan-layanan"
+                  className="text-2xl font-semibold text-slate-900"
+                >
+                  Keunggulan Layanan {service.title}
+                </h2>
+                {listItems.length ? (
+                  <ul className="grid sm:grid-cols-2 gap-3">
+                    {listItems.map((item, index) => (
+                      <li
+                        key={`${item}-${index}`}
+                        className="flex gap-3 text-sm text-slate-700"
+                      >
+                        <span
+                          className="mt-2 h-1.5 w-1.5 bg-amber-500 shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : list.length ? (
+                  <div className="text-slate-700 leading-relaxed">
+                    <ServiceBlocksRenderer content={list} />
+                  </div>
+                ) : (
+                  <p className="text-slate-700 leading-relaxed">
+                    Konsultasikan kebutuhan Anda untuk mendapatkan rekomendasi
+                    desain, material, dan estimasi pengerjaan yang sesuai.
+                  </p>
+                )}
+              </section>
+
+              <section className="bg-amber-50/60 p-5">
+                <h3 className="text-lg font-semibold text-[#171717]">
+                  Butuh Estimasi Biaya?
+                </h3>
+                <p className="text-sm text-slate-600 mt-2">
+                  Kirim detail ukuran dan desain yang Anda inginkan, tim kami
+                  siap memberikan estimasi cepat dan rekomendasi material terbaik.
+                </p>
+                <a
+                  href="https://wa.me/6281283993386"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-green-500 px-5 py-2 text-sm font-semibold text-black hover:bg-green-600 transition"
+                >
+                  Konsultasi via WhatsApp
+                </a>
+              </section>
             </div>
           </article>
-        </main>
 
-        {/* LIST & HEADING */}
-        <section className="px-4 space-y-3">
-          <ServiceBlocksRenderer content={heading2} />
-          <ServiceBlocksRenderer content={list} />
+          <aside className="space-y-6 lg:sticky lg:top-6 self-start">
+            <section className="p-0">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Konsultasi Cepat
+              </h3>
+              <p className="text-sm text-slate-600 mt-2">
+                Konsultasi gratis untuk menentukan material, ukuran, dan desain
+                yang sesuai kebutuhan Anda.
+              </p>
+              <a
+                href="https://wa.me/6281283993386"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-black hover:bg-green-600 transition"
+              >
+                Hubungi via WhatsApp
+              </a>
+            </section>
+
+            <section className="p-0">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Daftar Layanan
+              </h3>
+              {relatedServices.length ? (
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-700">
+                  {relatedServices.map((item) => (
+                    <Link
+                      key={item.id || item.slug}
+                      href={`/jasa-las/${item.slug}`}
+                      className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 hover:bg-slate-200 transition"
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-slate-600">
+                  Daftar layanan akan segera diperbarui.
+                </p>
+              )}
+            </section>
+          </aside>
+        </div>
+
+        <section className="mt-10 space-y-8" aria-label="Proses dan testimoni">
+          <StepToOrder variant="clean" />
+          <Testimonial variant="clean" />
         </section>
-
-        {/* STEP + TESTIMONIAL */}
-        <footer className="px-4">
-          <StepToOrder />
-          <Testimonial />
-        </footer>
-      </div>
+      </main>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
