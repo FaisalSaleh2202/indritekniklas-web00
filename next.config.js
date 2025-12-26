@@ -9,10 +9,10 @@ const nextConfig = {
         port: "1337", // port Strapi
         pathname: "/uploads/**", // semua path uploads
       },
+       // PROD (Strapi via HTTPS domain)
       {
-        protocol: "http",
-        hostname: "31.97.50.253",
-        port: "1337",
+        protocol: "https",
+        hostname: "strapi.srv1104184.hstgr.cloud",
         pathname: "/uploads/**",
       },
     ],
