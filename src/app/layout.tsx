@@ -128,7 +128,7 @@ export default function RootLayout({
         />
       </head>
 
-      <body className={nunitoSans.className}>
+      <body className={nunitoSans.className} suppressHydrationWarning>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-D0L6VRR43T"
           strategy="afterInteractive"

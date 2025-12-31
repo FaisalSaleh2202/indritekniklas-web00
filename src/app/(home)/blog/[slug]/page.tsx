@@ -140,18 +140,23 @@ export async function generateMetadata({
   const thumbnailUrl = serviceLocation.thumbnail?.[0]?.url
     ? process.env.STRAPI_URL + serviceLocation.thumbnail[0].url
     : undefined;
-  const plainText = extractPlainText(serviceLocation.description);
+  const plainText =
+    serviceLocation.meta_description ||
+    serviceLocation.short_description ||
+    getFirstParagraphText(serviceLocation.description) ||
+    extractPlainText(serviceLocation.description);
   const metaDescription = toMetaDescription(
     plainText ||
       `Bengkel Las ${serviceLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
   );
   const canonicalUrl = `https://bengkellasindriteknik.com/blog/${serviceLocation.slug}`;
 
+  const metaTitle =
+    serviceLocation.meta_title ||
+    `Bengkel Las ${serviceLocation.title} - Indri Teknik Las`;
+
   return {
-    title: {
-      default: `${serviceLocation.title}`,
-      template: "%s - las terdekat",
-    },
+    title: metaTitle,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -159,7 +164,7 @@ export async function generateMetadata({
       "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
     description: metaDescription,
     openGraph: {
-      title: `Bengkel Las ${serviceLocation.title}`,
+      title: metaTitle,
       description: metaDescription,
       type: "article",
       locale: "id",
@@ -178,7 +183,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: thumbnailUrl ? "summary_large_image" : "summary",
-      title: `Bengkel Las ${serviceLocation.title}`,
+      title: metaTitle,
       description: metaDescription,
       images: thumbnailUrl ? [thumbnailUrl] : undefined,
     },

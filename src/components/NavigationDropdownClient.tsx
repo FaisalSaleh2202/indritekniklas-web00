@@ -49,7 +49,7 @@ export default function NavigationDropdownClient({ services, className }: Props)
   return (
     <details ref={detailsRef} className={`relative group ${className ?? ""}`}>
       <summary className="flex items-center gap-1 cursor-pointer list-none hover:underline [&::-webkit-details-marker]:hidden">
-        Layanan
+        Jasa Kami
         <ChevronDown className="h-4 w-4" aria-hidden="true" />
       </summary>
 

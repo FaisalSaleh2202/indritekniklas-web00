@@ -32,6 +32,12 @@ export function NavigationMenu() {
             </li>
 
             <li role="none">
+              <Link href="/tentang-kami" className="hover:underline">
+                Tentang Kami
+              </Link>
+            </li>
+
+            <li role="none">
               <NavigationDropdown />
             </li>
 
@@ -42,12 +48,6 @@ export function NavigationMenu() {
               {/* <a role="menuitem" href="#kontak" className="hover:underline">
                 Kontak
               </a> */}
-            </li>
-
-            <li role="none">
-              <Link href="/blog" className="hover:underline">
-                Blog
-              </Link>
             </li>
           </ul>
         </div>

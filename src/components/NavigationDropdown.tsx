@@ -16,7 +16,7 @@ export default async function NavigationDropdown({
   if (variant === "list") {
     return (
       <div className={className}>
-        <p className="text-sm font-semibold text-white">Layanan</p>
+        <p className="text-sm font-semibold text-white">Jasa Kami</p>
         <ul className="mt-3 space-y-2 text-sm text-gray-300">
           {services.length > 0 ? (
             services.map((service) => (

@@ -69,7 +69,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
 
       {/* Panel Menu Mobile */}
       <aside
-        className={`fixed right-0 top-11 h-[calc(100vh-56px)] w-80 bg-white z-40 shadow-xl border-l border-gray-200 transform transition-transform duration-500 ease-in-out overflow-y-auto
+        className={`fixed right-0 top-11 h-[calc(100vh-40px)] w-80 bg-white z-40 shadow-xl border-l border-gray-200 transform transition-transform duration-500 ease-in-out overflow-y-auto
           ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <nav className="flex flex-col text-lg pt-4 pb-6 mx-6 gap-1">
@@ -83,12 +83,21 @@ export default function NavigationMobileClient({ initialServices }: Props) {
           </Link>
           <hr className="my-1 border-gray-200" />
 
+          <Link
+            href="/tentang-kami"
+            onClick={closeAll}
+            className="py-3 hover:text-blue-600 transition"
+          >
+            Tentang Kami
+          </Link>
+          <hr className="my-1 border-gray-200" />
+
           {/* Layanan */}
           <button
             onClick={() => setIsLayananOpen(!isLayananOpen)}
             className="flex justify-between items-center py-3 hover:text-blue-600 transition"
           >
-            <span>Layanan</span>
+            <span>Jasa Kami</span>
             <ChevronDown
               className={`h-5 w-5 transition-transform duration-300 ${
                 isLayananOpen ? "rotate-180" : ""
@@ -131,15 +140,6 @@ export default function NavigationMobileClient({ initialServices }: Props) {
             className="py-3 hover:text-blue-600 transition"
           >
             Kontak Kami
-          </Link>
-          <hr className="my-1 border-gray-200" />
-
-          <Link
-            href="/blog"
-            onClick={closeAll}
-            className="py-3 hover:text-blue-600 transition"
-          >
-            Blog
           </Link>
           <hr className="my-1 border-gray-200" />
         </nav>

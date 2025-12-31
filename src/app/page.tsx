@@ -1,4 +1,5 @@
 import { AboutUsSection } from "@/components/AboutUsSection";
+import { BlogSection } from "@/components/Blog";
 import { Hero } from "@/components/Hero";
 import { ServiceSection } from "@/components/ServiceSection";
 import StepToOrder from "@/components/StepToOrder";
@@ -35,6 +36,7 @@ export default async function Home() {
       <AboutUsSection />
       <StepToOrder variant="clean" />
       <Testimonial variant="clean"  />
+      <BlogSection />
     </main>
   );
 }

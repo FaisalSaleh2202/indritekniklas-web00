@@ -1,24 +1,4 @@
-const steps = [
-  {
-    title: "Pastikan Kebutuhan Anda",
-    description:
-      "Tentukan jenis layanan las yang Anda butuhkan seperti kanopi, pagar, atau tralis.",
-  },
-  {
-    title: "Konsultasi Kepada Kami",
-    description:
-      "Diskusikan spesifikasi, desain, ukuran, serta estimasi biaya secara langsung.",
-  },
-  {
-    title: "Negosiasi Dan Transfer DP",
-    description:
-      "Setelah kesepakatan, lakukan pembayaran DP untuk memulai pengerjaan.",
-  },
-  {
-    title: "Pengerjaan Dan Pelunasan",
-    description: "Proses pengerjaan dimulai hingga selesai sesuai kesepakatan.",
-  },
-];
+import { ORDER_STEPS } from "@/lib/site-content";
 
 type StepToOrderProps = {
   variant?: "default" | "clean";
@@ -54,7 +34,7 @@ export default function StepToOrder({ variant = "default" }: StepToOrderProps) {
           </header>
 
           <ol className="grid gap-4">
-            {steps.map((step, index) => (
+            {ORDER_STEPS.map((step, index) => (
               <li
                 key={step.title}
                 className={itemClassName}

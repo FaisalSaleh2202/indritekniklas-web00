@@ -69,27 +69,36 @@ export async function generateMetadata({
   params: Promise<{ slug: string; service: string }>;
 }): Promise<Metadata> {
   const { slug, service: serviceSlug } = await params;
-  const service = await getServiceBySlug(serviceSlug);
+  const [service, location] = await Promise.all([
+    getServiceBySlug(serviceSlug),
+    getServiceLocationBySlug(slug),
+  ]);
 
   if (!service) {
     return { title: "Layanan Tidak Ditemukan" };
   }
 
+  const areaName = location?.title;
   const descriptionText = extractPlainText(service.description);
   const metaDescription = toMetaDescription(
     descriptionText ||
       service.meta_description ||
       service.short_description ||
-      `Bengkel Las ${service.title} membantu kebutuhan las dan konstruksi ringan sesuai kebutuhan proyek Anda.`
+      `Bengkel Las ${service.title}${
+        areaName ? ` di ${areaName}` : ""
+      } membantu kebutuhan las dan konstruksi ringan sesuai kebutuhan proyek Anda.`
   );
   const thumbnailUrl = service.thumbnail?.url
     ? process.env.STRAPI_URL + service.thumbnail.url
     : undefined;
   const canonicalUrl = `https://bengkellasindriteknik.com/blog/${slug}/${service.slug}`;
+  const metaTitle =
+    service.meta_title ||
+    `Bengkel Las ${service.title}${areaName ? ` di ${areaName}` : ""}`;
 
   return {
     title: {
-      default: `Bengkel Las ${service.title}`,
+      default: metaTitle,
       template: "%s - las terdekat",
     },
     alternates: {
@@ -99,7 +108,7 @@ export async function generateMetadata({
       "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
     description: metaDescription,
     openGraph: {
-      title: `Bengkel Las ${service.title}`,
+      title: metaTitle,
       description: metaDescription,
       type: "article",
       locale: "id",
@@ -115,6 +124,12 @@ export async function generateMetadata({
             },
           ]
         : undefined,
+    },
+    twitter: {
+      card: thumbnailUrl ? "summary_large_image" : "summary",
+      title: metaTitle,
+      description: metaDescription,
+      images: thumbnailUrl ? [thumbnailUrl] : undefined,
     },
     metadataBase: new URL("https://bengkellasindriteknik.com"),
   };

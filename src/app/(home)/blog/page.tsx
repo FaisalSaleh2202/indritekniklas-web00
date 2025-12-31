@@ -3,117 +3,242 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
+import type { Metadata } from "next";
 import { getAllServiceLocations } from "@/lib/strapi/service-location/service-location.service";
-import type { ServiceLocation } from "@/lib/strapi/types";
+import { getAllServices } from "@/lib/strapi/service/service.service";
+import type { Service, ServiceLocation, StrapiMedia } from "@/lib/strapi/types";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
 // export const revalidate = 3600;
 
-export default async function BlogPage() {
-  const serviceLocations = await getAllServiceLocations();
+export const metadata: Metadata = {
+  title: "Blog - Indri Teknik Las",
+  description:
+    "Artikel terbaru seputar layanan las, material besi, dan tips perawatan dari Indri Teknik Las.",
+  alternates: {
+    canonical: "https://bengkellasindriteknik.com/blog",
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "https://bengkellasindriteknik.com/blog",
+    siteName: "Indri Teknik Las",
+    title: "Blog - Indri Teknik Las",
+    description:
+      "Artikel terbaru seputar layanan las, material besi, dan tips perawatan dari Indri Teknik Las.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Blog - Indri Teknik Las",
+    description:
+      "Artikel terbaru seputar layanan las, material besi, dan tips perawatan dari Indri Teknik Las.",
+  },
+};
 
-  if (!serviceLocations || serviceLocations.length === 0) {
+type TabKey = "all" | "layanan" | "lokasi";
+type SearchParams = Record<string, string | string[] | undefined>;
+
+type TrendingItem = {
+  key: string;
+  type: "layanan" | "lokasi";
+  title: string;
+  href: string;
+  createdAt: string;
+  imageUrl: string | null;
+};
+
+function resolveStrapiMediaUrl(
+  media: StrapiMedia | undefined | null,
+  strapiUrl: string
+): string | null {
+  const url =
+    media?.formats?.small?.url ??
+    media?.formats?.medium?.url ??
+    media?.formats?.large?.url ??
+    media?.url ??
+    null;
+  return url ? `${strapiUrl}${url}` : null;
+}
+
+function resolveServiceLocationImageUrl(
+  location: ServiceLocation,
+  strapiUrl: string
+): string | null {
+  const first = location.thumbnail?.[0] ?? null;
+  return resolveStrapiMediaUrl(first, strapiUrl);
+}
+
+function toTrendingFromService(
+  service: Service,
+  strapiUrl: string
+): TrendingItem {
+  return {
+    key: `service-${service.id}`,
+    type: "layanan",
+    title: service.title,
+    href: service.slug ? `/jasa-las/${service.slug}` : "/jasa-las",
+    createdAt: service.createdAt,
+    imageUrl: resolveStrapiMediaUrl(service.thumbnail, strapiUrl),
+  };
+}
+
+function toTrendingFromLocation(
+  location: ServiceLocation,
+  strapiUrl: string
+): TrendingItem {
+  return {
+    key: `location-${location.id}`,
+    type: "lokasi",
+    title: location.title,
+    href: location.slug ? `/blog/${location.slug}` : "/blog",
+    createdAt: location.createdAt,
+    imageUrl: resolveServiceLocationImageUrl(location, strapiUrl),
+  };
+}
+
+function getTab(
+  searchParams?: Record<string, string | string[] | undefined>
+): TabKey {
+  const raw = searchParams?.tab;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  if (value === "layanan" || value === "lokasi" || value === "all") return value;
+  return "all";
+}
+
+function TabLink({
+  active,
+  href,
+  label,
+}: {
+  active: boolean;
+  href: string;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={[
+        "px-3 py-2 text-sm font-medium border-b-2 transition whitespace-nowrap",
+        active
+          ? "border-teal-600 text-teal-700"
+          : "border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-200",
+      ].join(" ")}
+    >
+      {label}
+    </Link>
+  );
+}
+
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams?: Promise<SearchParams> | SearchParams;
+}) {
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const tab = getTab(resolvedSearchParams);
+
+  const [serviceLocations, services] = await Promise.all([
+    getAllServiceLocations(),
+    getAllServices(),
+  ]);
+
+  const strapiUrl =
+    process.env.STRAPI_URL ?? process.env.NEXT_PUBLIC_STRAPI_URL ?? "";
+
+  const locationItems = (serviceLocations ?? [])
+    .map((item) => toTrendingFromLocation(item, strapiUrl))
+    .slice(0, 20);
+  const serviceItems = (services ?? [])
+    .map((item) => toTrendingFromService(item, strapiUrl))
+    .slice(0, 20);
+
+  const items: TrendingItem[] =
+    tab === "layanan"
+      ? serviceItems
+      : tab === "lokasi"
+        ? locationItems
+        : [...locationItems.slice(0, 10), ...serviceItems.slice(0, 10)];
+
+  if (!items.length) {
     return (
       <main className="page-container page-section">
-        <header className="page-header text-center">
-          <h1 className="text-3xl font-semibold text-gray-900">Blog</h1>
-          <p className="mt-3 text-gray-600">Belum ada artikel saat ini.</p>
-        </header>
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-10">
+          <header className="text-center">
+            <h1 className="text-4xl font-semibold text-slate-900">Blogs</h1>
+            <div className="mt-6 border-b border-slate-200">
+              <nav className="flex items-center justify-center gap-2 overflow-auto">
+                <TabLink active href="/blog?tab=all" label="Semua" />
+                <TabLink active={false} href="/blog?tab=layanan" label="Layanan" />
+                <TabLink active={false} href="/blog?tab=lokasi" label="Lokasi" />
+              </nav>
+            </div>
+          </header>
+
+          <p className="mt-10 text-center text-slate-600">
+            Belum ada konten saat ini.
+          </p>
+        </div>
       </main>
     );
   }
 
-  const latest = serviceLocations[0];
-  const topReads = serviceLocations.slice(1, 4);
-
-  const getImageUrl = (blog: ServiceLocation) => {
-    const thumbnail = blog.thumbnail?.[0];
-    return thumbnail ? `${process.env.STRAPI_URL}${thumbnail.url}` : null;
-  };
-
   return (
     <main className="page-container page-section">
-      <header className="page-header">
-        <h1 className="text-3xl font-semibold text-gray-900">Blog</h1>
-        <p className="mt-3 text-gray-600">
-          Artikel terbaru seputar layanan las, material besi, dan tips perawatan.
-        </p>
-      </header>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-10">
+        <header className="text-center">
+          <h1 className="text-4xl font-semibold text-slate-900">Blogs</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {/* THE LATEST */}
-          <div className="md:col-span-2">
-            <h2 id="the-latest" className="text-2xl font-semibold mb-6 text-gray-900">
-              Artikel Terbaru
-            </h2>
+          <div className="mt-6 border-b border-slate-200">
+            <nav className="flex items-center justify-center gap-2 overflow-auto">
+              <TabLink active={tab === "all"} href="/blog?tab=all" label="Semua" />
+              <TabLink
+                active={tab === "layanan"}
+                href="/blog?tab=layanan"
+                label="Layanan"
+              />
+              <TabLink
+                active={tab === "lokasi"}
+                href="/blog?tab=lokasi"
+                label="Lokasi"
+              />
+            </nav>
+          </div>
+        </header>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {items.map((item) => (
             <Link
-              href={`/blog/${latest.slug}`}
-              className="block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+              key={item.key}
+              href={item.href}
+              className="group flex items-start justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 transition hover:shadow-md"
             >
-              {getImageUrl(latest) ? (
+              <div className="min-w-0 flex-1">
+                <h2 className="text-base font-semibold leading-snug text-slate-900 line-clamp-2">
+                  {item.title}
+                </h2>
+                <div className="mt-2 flex items-center gap-2 text-xs text-slate-600">
+                  <span className="capitalize">{item.type}</span>
+                  <span aria-hidden="true">•</span>
+                  <span>{formatDate(item.createdAt)}</span>
+                </div>
+              </div>
+
+              {item.imageUrl ? (
                 <Image
-                  src={getImageUrl(latest)!}
-                  alt={latest.title}
-                  width={800}
-                  height={450}
-                  className="w-full object-contain"
-                  priority
+                  src={item.imageUrl}
+                  alt={item.title}
+                  width={112}
+                  height={80}
+                  className="h-20 w-28 flex-shrink-0 rounded-xl object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
               ) : (
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-96" />
+                <div className="h-20 w-28 flex-shrink-0 rounded-xl bg-slate-200" />
               )}
-
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">
-                  {latest.title}
-                </h3>
-                <p className="text-gray-600 line-clamp-3 mb-4">
-                  {latest.title.replace(/<[^>]*>/g, "").slice(0, 250)}...
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formatDate(latest.createdAt || latest.createdAt)}
-                </p>
-              </div>
             </Link>
-          </div>
-
-          {/* TOP READS */}
-          <div>
-            <h2 id="top-reads" className="text-2xl font-semibold mb-6 text-gray-900">
-              Top Reads
-            </h2>
-            <div className="space-y-4">
-              {topReads.map((blog) => (
-                <Link
-                  key={blog.id}
-                  href={`/blog/${blog.slug}`}
-                  className="flex gap-4 items-start bg-white rounded-xl p-4 shadow hover:shadow-md transition-shadow"
-                >
-                  {getImageUrl(blog) ? (
-                    <Image
-                      src={getImageUrl(blog)!}
-                      alt={blog.title}
-                      width={120}
-                      height={80}
-                      className="rounded-lg object-cover w-28 h-20 flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="bg-gray-200 border-2 border-dashed rounded-lg w-28 h-20 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-sm leading-tight line-clamp-2 text-gray-800">
-                      {blog.title}
-                    </h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatDate(blog.createdAt || blog.createdAt)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          ))}
+        </div>
       </div>
     </main>
   );
