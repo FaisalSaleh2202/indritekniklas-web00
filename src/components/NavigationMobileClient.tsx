@@ -27,7 +27,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
   return (
     <>
       {/* Tombol Toggle Menu – VERSI SUPER SMOOTH */}
-      <div className="md:hidden fixed top-0 right-4 z-50">
+      <div className="md:hidden fixed top-2 right-4 z-50">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Buka/tutup menu navigasi"
@@ -69,7 +69,7 @@ export default function NavigationMobileClient({ initialServices }: Props) {
 
       {/* Panel Menu Mobile */}
       <aside
-        className={`fixed top-[43px] right-0 h-[calc(100vh-46px)] w-80 bg-white z-40 transform transition-transform duration-500 ease-in-out overflow-y-auto
+        className={`fixed top-[56px] right-0 h-[calc(100vh-56px)] w-80 bg-white z-40 transform transition-transform duration-500 ease-in-out overflow-y-auto
           ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <nav className="flex flex-col text-lg mt-6 mx-6 gap-1">

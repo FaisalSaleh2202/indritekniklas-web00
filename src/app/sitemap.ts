@@ -44,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const serviceLocation = await getAllServiceLocations(); 
 
-
   const servicesLocationRoutes: MetadataRoute.Sitemap =
     serviceLocation?.map((service: ServiceLocation) => ({
       url: `${baseUrl}/blog/${service.slug}`,
@@ -53,5 +52,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         : new Date(),
     })) ?? [];
 
-  return [...staticRoutes, ...serviceRoutes, ...servicesLocationRoutes];
+  const serviceLocationServiceRoutes: MetadataRoute.Sitemap =
+    (serviceLocation ?? []).flatMap((location: ServiceLocation) =>
+      (services ?? []).map((service: Service) => {
+        const latestUpdate = Math.max(
+          new Date(location.updatedAt ?? location.createdAt).getTime(),
+          new Date(service.updatedAt ?? service.createdAt).getTime()
+        );
+
+        return {
+          url: `${baseUrl}/blog/${location.slug}/${service.slug}`,
+          lastModified: new Date(latestUpdate),
+          changeFrequency: "weekly" as const,
+          priority: 0.6,
+        };
+      })
+    );
+
+  return [
+    ...staticRoutes,
+    ...serviceRoutes,
+    ...servicesLocationRoutes,
+    ...serviceLocationServiceRoutes,
+  ];
 }

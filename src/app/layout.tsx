@@ -5,6 +5,7 @@ import { NavigationMenu } from "@/components/NavigationMenu";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -128,6 +129,18 @@ export default function RootLayout({
       </head>
 
       <body className={nunitoSans.className}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-D0L6VRR43T"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-D0L6VRR43T');
+          `}
+        </Script>
         <NavigationMenu />
         {children}
         <Footer />

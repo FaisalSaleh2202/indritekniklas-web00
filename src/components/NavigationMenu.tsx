@@ -14,10 +14,12 @@ export function NavigationMenu() {
         {/* LOGO / BRAND */}
         <Link
           href="/"
-          className="text-xl text-light flex gap-3 items-center"
+          className="text-xl text-light flex items-center gap-3"
           aria-label="Indri Teknik Las - Beranda"
         >
-          <span>Indri Teknik Las</span>
+          <span className="whitespace-nowrap text-base md:text-xl font-semibold">
+            Indri Teknik Las
+          </span>
         </Link>
 
         {/* DESKTOP MENU */}
