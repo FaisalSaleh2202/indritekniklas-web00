@@ -1,4 +1,4 @@
-// app/jasa-las/[slug]/page.tsx
+// app/blog/[slug]/[service]/page.tsx
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
@@ -13,6 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getServiceLocationBySlug } from "@/lib/strapi/service-location/service-location.service";
 import {
   getAllServices,
   getServiceBySlug,
@@ -62,20 +63,13 @@ function extractListItems(listNodes: RichTextNode[]): string[] {
   return items;
 }
 
-// export async function generateStaticParams() {
-//   const services = await getAllServices();
-//   return services.map((service) => ({
-//     slug: service.slug,
-//   }));
-// }
-
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; service: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const { slug, service: serviceSlug } = await params;
+  const service = await getServiceBySlug(serviceSlug);
 
   if (!service) {
     return { title: "Layanan Tidak Ditemukan" };
@@ -91,6 +85,7 @@ export async function generateMetadata({
   const thumbnailUrl = service.thumbnail?.url
     ? process.env.STRAPI_URL + service.thumbnail.url
     : undefined;
+  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${slug}/${service.slug}`;
 
   return {
     title: {
@@ -98,7 +93,7 @@ export async function generateMetadata({
       template: "%s - las terdekat",
     },
     alternates: {
-      canonical: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
+      canonical: canonicalUrl,
     },
     robots:
       "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
@@ -108,7 +103,7 @@ export async function generateMetadata({
       description: metaDescription,
       type: "article",
       locale: "id",
-      url: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
+      url: canonicalUrl,
       siteName: "Bengkel Las Indri Teknik",
       images: thumbnailUrl
         ? [
@@ -125,13 +120,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function ServiceDetailPage({
+export default async function BlogServiceDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; service: string }>;
 }) {
-  const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const { slug, service: serviceSlug } = await params;
+  const [service, location] = await Promise.all([
+    getServiceBySlug(serviceSlug),
+    getServiceLocationBySlug(slug),
+  ]);
 
   if (!service) notFound();
   const allServices = await getAllServices();
@@ -151,7 +149,7 @@ export default async function ServiceDetailPage({
       !heading2.includes(block) &&
       !list.includes(block)
   );
-  const fallbackIntro = `Layanan ${service.title} dari Indri Teknik Las dirancang untuk membantu kebutuhan konstruksi ringan dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
+  const fallbackIntro = `Layanan ${service.title} dari Indri Teknik Las untuk area ${location?.title ?? slug} dirancang untuk membantu kebutuhan konstruksi ringan dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
   const thumbnailUrl = service.thumbnail?.url
     ? process.env.STRAPI_URL + service.thumbnail.url
     : null;
@@ -169,10 +167,7 @@ export default async function ServiceDetailPage({
     (item) => item?.slug && item.slug !== service.slug
   );
 
-  // const thumbnailUrl = service.thumbnail?.url
-  //   ? process.env.NEXT_PUBLIC_STRAPI_URL + service.thumbnail.url
-  //   : null;
-
+  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${slug}/${service.slug}`;
   const jsonLdDescription =
     extractPlainText(descriptionBlocks) ||
     service.meta_description ||
@@ -199,7 +194,7 @@ export default async function ServiceDetailPage({
       telephone: "+6281283993386",
       priceRange: "Rp. 550.000",
     },
-    url: `https://bengkellasindriteknik.com/jasa-las/${service.slug}`,
+    url: canonicalUrl,
     offers: {
       "@type": "Offer",
       price: "550.000",
@@ -225,7 +220,15 @@ export default async function ServiceDetailPage({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="#">Layanan</Link>
+                    <Link href="/blog">Blog</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href={`/blog/${slug}`}>
+                      {location?.title || slug}
+                    </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -415,7 +418,7 @@ export default async function ServiceDetailPage({
                   {relatedServices.map((item) => (
                     <Link
                       key={item.id || item.slug}
-                      href={`/jasa-las/${item.slug}`}
+                      href={`/blog/${slug}/${item.slug}`}
                       className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 hover:bg-slate-200 transition"
                     >
                       {item.title}

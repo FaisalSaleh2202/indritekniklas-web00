@@ -67,6 +67,62 @@ function toMetaDescription(text: string, max = 160) {
   return `${text.slice(0, safeMax).trim()}...`;
 }
 
+type TableOfContentsItem = {
+  id: string;
+  title: string;
+  level: number;
+};
+
+function createSlugger() {
+  const counts = new Map<string, number>();
+  return (text: string) => {
+    const base =
+      text
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-") || "bagian";
+    const count = counts.get(base) ?? 0;
+    const nextCount = count + 1;
+    counts.set(base, nextCount);
+    return count === 0 ? base : `${base}-${nextCount}`;
+  };
+}
+
+function buildContentWithAnchors(
+  nodes?: RichTextNode[]
+): { contentWithAnchors: RichTextNode[]; toc: TableOfContentsItem[] } {
+  const slugify = createSlugger();
+  const toc: TableOfContentsItem[] = [];
+
+  const cloneNodes = (items?: RichTextNode[]): RichTextNode[] => {
+    if (!items) return [];
+
+    return items.map((item) => {
+      const cloned: RichTextNode = { ...item };
+
+      if (item.children?.length) {
+        cloned.children = cloneNodes(item.children);
+      }
+
+      if (item.type === "heading") {
+        const title = extractPlainText(item.children);
+        const id = slugify(title);
+        cloned.anchorId = id;
+
+        if (item.level && item.level >= 2 && item.level <= 4 && title) {
+          toc.push({ id, title, level: item.level });
+        }
+      }
+
+      return cloned;
+    });
+  };
+
+  return { contentWithAnchors: cloneNodes(nodes), toc };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -153,13 +209,37 @@ export default async function BlogDetail({
     blogLocation.description || openingParagraph,
     blogLocation.title
   );
-  const plainText = extractPlainText(contentBlocks);
+  const { contentWithAnchors, toc } = buildContentWithAnchors(contentBlocks);
+  const primaryContentHeading = toc[0];
+  const primaryTitle = `Kenapa Banyak Pelanggan Memilih Bengkel Las Kami di ${blogLocation.title}?`;
+  const primaryDisplayTitle = primaryContentHeading?.title || primaryTitle;
+  const primaryAnchorId =
+    primaryContentHeading?.id || createSlugger()(primaryTitle);
+  const plainText = extractPlainText(contentWithAnchors);
   const metaDescription = toMetaDescription(
     plainText ||
       `Bengkel Las ${blogLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
   );
 
   const serviceList: Service[] = await getAllServices();
+  const customToc = [
+    {
+      id: "whatsapp",
+      title: "Hubungi via WhatsApp",
+      href: "https://wa.me/6281283993386",
+      external: true,
+    },
+    { id: primaryAnchorId, title: primaryDisplayTitle },
+    { id: "area-layanan", title: "Area layanan" },
+    {
+      id: "layanan-terkait",
+      title: "Jasa Kami / Layanan Terkait",
+    },
+    {
+      id: "jenis-besi",
+      title: "Jenis-jenis Besi Berkualitas dari Indri Teknik Las",
+    },
+  ];
 
   return (
     <div className="min-h-screen">
@@ -248,40 +328,119 @@ export default async function BlogDetail({
       </header>
 
       <main className="page-container page-section page-stack">
-        <article className="mx-auto max-w-4xl page-stack">
-          <header className="text-sm text-gray-700">
-            <div className="flex flex-wrap items-center gap-2">
-              <time dateTime={new Date(blogLocation.createdAt).toISOString()}>
-                {formatDate(blogLocation.createdAt)}
-              </time>
-              <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
-              <span>Indri Teknik Las Team</span>
-              <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
-              <span className="text-gray-500">Waktu Membaca 3 Menit</span>
-            </div>
-          </header>
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-8 items-start">
+          <article className="mx-auto max-w-4xl page-stack">
+            <header className="text-sm text-gray-700">
+              <div className="flex flex-wrap items-center gap-2">
+                <time dateTime={new Date(blogLocation.createdAt).toISOString()}>
+                  {formatDate(blogLocation.createdAt)}
+                </time>
+                <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
+                <span>Indri Teknik Las Team</span>
+                <span className="h-1 w-1 bg-gray-300" aria-hidden="true" />
+                <span className="text-gray-500">Waktu Membaca 3 Menit</span>
+              </div>
+            </header>
 
-          <figure>
-            {thumbnailUrl ? (
-              <Image
-                src={thumbnailUrl}
-                alt={blogLocation.title}
-                width={960}
-                height={640}
-                loading="eager"
-                className="object-contain w-full"
-              />
-            ) : (
-              <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
-            )}
+            <figure>
+              {thumbnailUrl ? (
+                <Image
+                  src={thumbnailUrl}
+                  alt={blogLocation.title}
+                  width={960}
+                  height={640}
+                  loading="eager"
+                  className="object-contain w-full"
+                />
+              ) : (
+                <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
+              )}
 
-            <figcaption className="sr-only">{blogLocation.title}</figcaption>
+              <figcaption className="sr-only">{blogLocation.title}</figcaption>
           </figure>
 
+          {customToc.length ? (
+            <nav
+              className="mt-4 lg:hidden bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+              aria-label="Daftar isi artikel"
+            >
+              <h2 className="text-base font-semibold text-gray-900">Daftar Isi</h2>
+              <ol className="mt-3 space-y-2 text-sm text-gray-700">
+                {customToc.map((item) => {
+                  const href = item.href || `#${item.id}`;
+                  const isExternal = Boolean(item.external);
+
+                  return (
+                    <li key={item.id}>
+                      <a
+                        href={href}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                        className="group block hover:text-gray-900"
+                      >
+                        <span className="group-hover:underline underline-offset-4">
+                          {item.title}
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
+          ) : null}
+
+          {!primaryContentHeading ? (
+            <div id={primaryAnchorId} className="h-0" aria-hidden="true" />
+          ) : null}
+
+          <section
+            id="area-layanan"
+            className="bg-gray-50 border border-gray-200 rounded-2xl p-4 md:p-5 space-y-2"
+          >
+            <h2 className="text-lg font-semibold text-gray-900">Area Layanan</h2>
+            <p className="text-gray-700 leading-relaxed">
+              Indri Teknik Las siap melayani kawasan {blogLocation.title} dan
+              sekitarnya dengan tim yang berpengalaman, mulai dari survei lokasi
+              hingga pemasangan rapi sesuai permintaan Anda.
+            </p>
+          </section>
+
           <div>
-            <ServiceBlocksRenderer content={contentBlocks} />
+            <ServiceBlocksRenderer content={contentWithAnchors} />
           </div>
         </article>
+
+        {customToc.length ? (
+          <aside className="hidden lg:block lg:sticky lg:top-24 self-start">
+            <div className="bg-white border border-gray-200 p-5 rounded-2xl space-y-3">
+              <h2 className="text-lg font-semibold text-gray-900">Daftar Isi</h2>
+              <nav aria-label="Daftar isi artikel">
+                <ol className="space-y-2 text-sm text-gray-700">
+                  {customToc.map((item) => {
+                    const href = item.href || `#${item.id}`;
+                    const isExternal = Boolean(item.external);
+
+                    return (
+                      <li key={item.id}>
+                        <a
+                          href={href}
+                          target={isExternal ? "_blank" : undefined}
+                          rel={isExternal ? "noopener noreferrer" : undefined}
+                          className="group block hover:text-gray-900"
+                        >
+                          <span className="group-hover:underline underline-offset-4">
+                            {item.title}
+                          </span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </nav>
+            </div>
+          </aside>
+        ) : null}
+        </div>
 
         <section aria-labelledby="layanan-terkait">
           <header className="mb-4">
@@ -292,7 +451,9 @@ export default async function BlogDetail({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {serviceList.map((service) => {
-              const href = service.slug ? `/jasa-las/${service.slug}` : "/jasa-las";
+              const href = service.slug
+                ? `/blog/${blogLocation.slug}/${service.slug}`
+                : "/jasa-las";
               const imgUrl = service.thumbnail?.url
                 ? process.env.STRAPI_URL + service.thumbnail.url
                 : null;
@@ -356,7 +517,7 @@ export default async function BlogDetail({
                 150
               );
               const serviceHref = service.slug
-                ? `/jasa-las/${service.slug}`
+                ? `/blog/${blogLocation.slug}/${service.slug}`
                 : "/jasa-las";
 
               return (
