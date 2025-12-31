@@ -31,7 +31,7 @@ function getAreaNameFromTitle(title: string) {
   const beforeDash = t.split(" - ")[0].trim();
   // jaga-jaga kalau ada prefix yang tersimpan di Strapi
   const cleaned = beforeDash
-    .replace(/^Jasa\s+/i, "")
+    .replace(/^\s+/i, "")
     .replace(/^Bengkel\s+Las\s+/i, "")
     .trim();
 
@@ -168,15 +168,14 @@ export async function generateMetadata({
     extractPlainText(serviceLocation.description);
 
   const metaDescription = toMetaDescription(
-    plainText ||
-      `Bengkel Las ${areaName} Bekasi melayani pagar, kanopi, teralis, railing, dan konstruksi ringan. Konsultasi & survey tersedia.`
+      `Bengkel Las ${areaName} melayani pagar, kanopi, teralis, railing, dan konstruksi ringan. Konsultasi & survey tersedia.`
   );
 
   const canonicalUrl = `${SITE_URL}/blog/${serviceLocation.slug}`;
 
-  // ✅ Pakai "Bengkel Las" (bukan "Jasa")
+  // ✅ Pakai "Bengkel Las" (bukan "")
   const metaTitle =
-    serviceLocation.meta_title || `Bengkel Las ${areaName} Bekasi - Indri Teknik Las`;
+    serviceLocation.meta_title || `Bengkel Las ${areaName} - Indri Teknik Las`;
 
   return {
     title: metaTitle,
@@ -198,7 +197,7 @@ export async function generateMetadata({
               url: thumbnailUrl,
               width: 1200,
               height: 630,
-              alt: `Bengkel Las ${areaName} Bekasi`,
+              alt: `Bengkel Las ${areaName}`,
             },
           ]
         : undefined,
@@ -254,7 +253,7 @@ export default async function BlogDetail({
   const plainText = extractPlainText(contentWithAnchors);
   const metaDescription = toMetaDescription(
     plainText ||
-      `Bengkel Las ${areaName} Bekasi melayani berbagai kebutuhan las dan konstruksi.`
+      `Bengkel Las ${areaName} melayani berbagai kebutuhan las dan konstruksi.`
   );
 
   const serviceList: Service[] = await getAllServices();
@@ -270,7 +269,7 @@ export default async function BlogDetail({
     { id: "area-layanan", title: "Area layanan" },
     {
       id: "layanan-terkait",
-      title: "Jasa Kami / Layanan Terkait",
+      title: " Kami / Layanan Terkait",
     },
     {
       id: "jenis-besi",
@@ -318,7 +317,7 @@ export default async function BlogDetail({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: `Bengkel Las ${areaName} Bekasi`,
+            headline: `Bengkel Las ${areaName} `,
             description: metaDescription,
             image: thumbnailUrl || undefined,
             datePublished: blogLocation.createdAt,
@@ -360,9 +359,9 @@ export default async function BlogDetail({
             </Breadcrumb>
           </nav>
 
-          {/* ✅ H1 SEO: pakai Bengkel Las + area + Bekasi (konten tidak dikurangi) */}
+          {/* ✅ H1 SEO: pakai Bengkel Las + area +  (konten tidak dikurangi) */}
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mx-auto max-w-4xl">
-            Bengkel Las {areaName} Bekasi
+            Bengkel Las {areaName} 
           </h1>
         </div>
       </header>
@@ -386,7 +385,7 @@ export default async function BlogDetail({
               {thumbnailUrl ? (
                 <Image
                   src={thumbnailUrl}
-                  alt={`Bengkel Las ${areaName} Bekasi`}
+                  alt={`Bengkel Las ${areaName} `}
                   width={960}
                   height={640}
                   loading="eager"
@@ -395,7 +394,7 @@ export default async function BlogDetail({
               ) : (
                 <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
               )}
-              <figcaption className="sr-only">{`Bengkel Las ${areaName} Bekasi`}</figcaption>
+              <figcaption className="sr-only">{`Bengkel Las ${areaName} `}</figcaption>
             </figure>
 
             {customToc.length ? (
@@ -488,7 +487,7 @@ export default async function BlogDetail({
             {serviceList.map((service) => {
               const href = service.slug
                 ? `/blog/${blogLocation.slug}/${service.slug}`
-                : "/jasa-las";
+                : "/-las";
               const imgUrl = service.thumbnail?.url
                 ? process.env.STRAPI_URL + service.thumbnail.url
                 : null;
@@ -524,10 +523,10 @@ export default async function BlogDetail({
           </div>
         </section>
 
-        <section aria-labelledby="jasa-kami">
+        <section aria-labelledby="-kami">
           <header className="mb-4">
-            <h2 id="jasa-kami" className="text-2xl font-bold mb-2 text-gray-800">
-              Jasa Kami
+            <h2 id="-kami" className="text-2xl font-bold mb-2 text-gray-800">
+               Kami
             </h2>
             <p className="text-gray-600">
               Jelajahi layanan las yang mendukung kebutuhan pagar, kanopi,
@@ -551,7 +550,7 @@ export default async function BlogDetail({
 
               const serviceHref = service.slug
                 ? `/blog/${blogLocation.slug}/${service.slug}`
-                : "/jasa-las";
+                : "/-las";
 
               return (
                 <article key={service.id} className="py-6 first:pt-0">

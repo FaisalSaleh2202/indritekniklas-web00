@@ -36,7 +36,6 @@ function getAreaNameFromTitle(title: string) {
   if (!t) return "";
   const beforeDash = t.split(" - ")[0].trim();
   return beforeDash
-    .replace(/^Jasa\s+/i, "")
     .replace(/^Bengkel\s+Las\s+/i, "")
     .trim() || beforeDash || t;
 }
@@ -108,12 +107,12 @@ export async function generateMetadata({
     service.meta_description ||
       service.short_description ||
       descFromContent ||
-      `Jasa ${service.title} di ${areaName} Bekasi. Pengerjaan rapi & kuat. Konsultasi dan estimasi via WhatsApp.`
+      `Bengkel Las ${service.title} di ${areaName} . Pengerjaan rapi & kuat. Konsultasi dan estimasi via WhatsApp.`
   );
 
 const metaTitle =
   service.meta_title ||
-  `Bengkel Las ${service.title} di ${areaName} Bekasi | Indri Teknik Las`;
+  `Bengkel Las ${service.title} di ${areaName}  | Indri Teknik Las`;
 
 
   return {
@@ -180,7 +179,7 @@ export default async function Page({
     ? process.env.STRAPI_URL + service.thumbnail.url
     : null;
 
-  const fallbackIntro = `Layanan ${service.title} untuk area ${areaName} Bekasi dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
+  const fallbackIntro = `Layanan ${service.title} untuk area ${areaName}  dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
 
   const faqItems = [
     {
@@ -211,7 +210,7 @@ export default async function Page({
   const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-name: `Bengkel Las ${service.title} di ${areaName} Bekasi`,
+name: `Bengkel Las ${service.title} di ${areaName} `,
     serviceType: service.title,
     url: canonicalUrl,
     description:
@@ -228,8 +227,8 @@ name: `Bengkel Las ${service.title} di ${areaName} Bekasi`,
       telephone: "+6281283993386",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Pekayon Jaya RT/RW. 003/004 Bekasi Selatan",
-        addressLocality: "Bekasi",
+        streetAddress: "Pekayon Jaya RT/RW. 003/004  Selatan",
+        addressLocality: "",
         addressRegion: "Jawa Barat",
         postalCode: "17148",
         addressCountry: "ID",
@@ -254,7 +253,7 @@ name: `Bengkel Las ${service.title} di ${areaName} Bekasi`,
     })),
   };
 
-const pageH1 = `Bengkel Las ${service.title} di ${areaName} Bekasi`;
+const pageH1 = `Bengkel Las ${service.title} di ${areaName} `;
 
 
   return (
@@ -374,7 +373,7 @@ const pageH1 = `Bengkel Las ${service.title} di ${areaName} Bekasi`;
                 {thumbnailUrl ? (
                   <Image
                     src={thumbnailUrl}
-              alt={`Bengkel Las ${service.title} di ${areaName} Bekasi`}
+              alt={`Bengkel Las ${service.title} di ${areaName} `}
                     width={960}
                     height={640}
                     className="h-72 w-full object-cover md:h-96"
