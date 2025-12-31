@@ -1,5 +1,6 @@
 // app/blog/[slug]/page.tsx
 export const revalidate = 3600;
+
 import ServiceBlocksRenderer from "@/components/ServiceBlocksRenderer";
 import SocialShare from "@/components/SocialShare";
 import {
@@ -14,12 +15,28 @@ import { getServiceLocationBySlug } from "@/lib/strapi/service-location/service-
 import { getAllServices } from "@/lib/strapi/service/service.service";
 import type { RichTextNode, Service, ServiceLocation } from "@/lib/strapi/types";
 import { formatDate } from "@/lib/utils";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Script from "next/script";
-// export const revalidate = 3600;
+
+const SITE_URL = "https://bengkellasindriteknik.com";
+const WHATSAPP_URL = "https://wa.me/6281283993386";
+
+function getAreaNameFromTitle(title: string) {
+  const t = (title || "").trim();
+  if (!t) return "";
+
+  const beforeDash = t.split(" - ")[0].trim();
+  // jaga-jaga kalau ada prefix yang tersimpan di Strapi
+  const cleaned = beforeDash
+    .replace(/^Jasa\s+/i, "")
+    .replace(/^Bengkel\s+Las\s+/i, "")
+    .trim();
+
+  return cleaned || beforeDash || t;
+}
 
 function replaceAreaNameText(text: string, areaName: string) {
   if (!text) return text;
@@ -62,9 +79,10 @@ function getFirstParagraphText(nodes?: RichTextNode[]): string {
 
 function toMetaDescription(text: string, max = 160) {
   if (!text) return "";
-  if (text.length <= max) return text;
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  if (cleaned.length <= max) return cleaned;
   const safeMax = Math.max(0, max - 3);
-  return `${text.slice(0, safeMax).trim()}...`;
+  return `${cleaned.slice(0, safeMax).trim()}...`;
 }
 
 type TableOfContentsItem = {
@@ -137,31 +155,35 @@ export async function generateMetadata({
     return { title: "Layanan Tidak Ditemukan" };
   }
 
+  const areaName = getAreaNameFromTitle(serviceLocation.title);
+
   const thumbnailUrl = serviceLocation.thumbnail?.[0]?.url
     ? process.env.STRAPI_URL + serviceLocation.thumbnail[0].url
     : undefined;
+
   const plainText =
     serviceLocation.meta_description ||
     serviceLocation.short_description ||
     getFirstParagraphText(serviceLocation.description) ||
     extractPlainText(serviceLocation.description);
+
   const metaDescription = toMetaDescription(
     plainText ||
-      `Bengkel Las ${serviceLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
+      `Bengkel Las ${areaName} Bekasi melayani pagar, kanopi, teralis, railing, dan konstruksi ringan. Konsultasi & survey tersedia.`
   );
-  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${serviceLocation.slug}`;
 
+  const canonicalUrl = `${SITE_URL}/blog/${serviceLocation.slug}`;
+
+  // ✅ Pakai "Bengkel Las" (bukan "Jasa")
   const metaTitle =
-    serviceLocation.meta_title ||
-    `Bengkel Las ${serviceLocation.title} - Indri Teknik Las`;
+    serviceLocation.meta_title || `Bengkel Las ${areaName} Bekasi - Indri Teknik Las`;
 
   return {
     title: metaTitle,
     alternates: {
       canonical: canonicalUrl,
     },
-    robots:
-      "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+    robots: "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
     description: metaDescription,
     openGraph: {
       title: metaTitle,
@@ -176,7 +198,7 @@ export async function generateMetadata({
               url: thumbnailUrl,
               width: 1200,
               height: 630,
-              alt: serviceLocation.title,
+              alt: `Bengkel Las ${areaName} Bekasi`,
             },
           ]
         : undefined,
@@ -187,7 +209,7 @@ export async function generateMetadata({
       description: metaDescription,
       images: thumbnailUrl ? [thumbnailUrl] : undefined,
     },
-    metadataBase: new URL("https://bengkellasindriteknik.com"),
+    metadataBase: new URL(SITE_URL),
   };
 }
 
@@ -202,6 +224,9 @@ export default async function BlogDetail({
   )) as ServiceLocation | null;
   if (!blogLocation) notFound();
 
+  // ✅ Area name untuk SEO heading (tanpa ubah konten Strapi)
+  const areaName = getAreaNameFromTitle(blogLocation.title);
+
   const openingParagraph = blogLocation.description
     ?.filter((b) => b.type === "paragraph")
     .slice(0, 2);
@@ -209,29 +234,36 @@ export default async function BlogDetail({
   const thumbnailUrl = blogLocation.thumbnail?.[0]?.url
     ? process.env.STRAPI_URL + blogLocation.thumbnail[0].url
     : null;
-  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${blogLocation.slug}`;
+
+  const canonicalUrl = `${SITE_URL}/blog/${blogLocation.slug}`;
+
+  // tetap: replace teks "Area Layanan Bengkel Las ..." di blok content agar sesuai area
   const contentBlocks = replaceAreaNameInBlocks(
     blogLocation.description || openingParagraph,
-    blogLocation.title
+    areaName
   );
+
   const { contentWithAnchors, toc } = buildContentWithAnchors(contentBlocks);
+
   const primaryContentHeading = toc[0];
-  const primaryTitle = `Kenapa Banyak Pelanggan Memilih Bengkel Las Kami di ${blogLocation.title}?`;
+  const primaryTitle = `Kenapa Banyak Pelanggan Memilih Bengkel Las Kami di ${areaName}?`;
   const primaryDisplayTitle = primaryContentHeading?.title || primaryTitle;
   const primaryAnchorId =
     primaryContentHeading?.id || createSlugger()(primaryTitle);
+
   const plainText = extractPlainText(contentWithAnchors);
   const metaDescription = toMetaDescription(
     plainText ||
-      `Bengkel Las ${blogLocation.title} melayani berbagai kebutuhan las dan konstruksi.`
+      `Bengkel Las ${areaName} Bekasi melayani berbagai kebutuhan las dan konstruksi.`
   );
 
   const serviceList: Service[] = await getAllServices();
+
   const customToc = [
     {
       id: "whatsapp",
       title: "Hubungi via WhatsApp",
-      href: "https://wa.me/6281283993386",
+      href: WHATSAPP_URL,
       external: true,
     },
     { id: primaryAnchorId, title: primaryDisplayTitle },
@@ -260,24 +292,25 @@ export default async function BlogDetail({
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://bengkellasindriteknik.com/",
+                item: `${SITE_URL}/`,
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Blog",
-                item: "https://bengkellasindriteknik.com/blog",
+                item: `${SITE_URL}/blog`,
               },
               {
                 "@type": "ListItem",
                 position: 3,
-                name: blogLocation.title,
+                name: areaName,
                 item: canonicalUrl,
               },
             ],
           }),
         }}
       />
+
       <Script
         id="blog-article-ld"
         type="application/ld+json"
@@ -285,7 +318,7 @@ export default async function BlogDetail({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            headline: blogLocation.title,
+            headline: `Bengkel Las ${areaName} Bekasi`,
             description: metaDescription,
             image: thumbnailUrl || undefined,
             datePublished: blogLocation.createdAt,
@@ -302,6 +335,7 @@ export default async function BlogDetail({
           }),
         }}
       />
+
       <header className="bg-gray-50">
         <div className="page-container page-header">
           <nav aria-label="Breadcrumb" className="mb-6">
@@ -320,14 +354,15 @@ export default async function BlogDetail({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{blogLocation.title}</BreadcrumbPage>
+                  <BreadcrumbPage>{areaName}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </nav>
 
+          {/* ✅ H1 SEO: pakai Bengkel Las + area + Bekasi (konten tidak dikurangi) */}
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mx-auto max-w-4xl">
-            {blogLocation.title}
+            Bengkel Las {areaName} Bekasi
           </h1>
         </div>
       </header>
@@ -351,7 +386,7 @@ export default async function BlogDetail({
               {thumbnailUrl ? (
                 <Image
                   src={thumbnailUrl}
-                  alt={blogLocation.title}
+                  alt={`Bengkel Las ${areaName} Bekasi`}
                   width={960}
                   height={640}
                   loading="eager"
@@ -360,87 +395,86 @@ export default async function BlogDetail({
               ) : (
                 <div className="bg-gray-200 border-2 border-dashed rounded-2xl h-96" />
               )}
+              <figcaption className="sr-only">{`Bengkel Las ${areaName} Bekasi`}</figcaption>
+            </figure>
 
-              <figcaption className="sr-only">{blogLocation.title}</figcaption>
-          </figure>
-
-          {customToc.length ? (
-            <nav
-              className="mt-4 lg:hidden bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
-              aria-label="Daftar isi artikel"
-            >
-              <h2 className="text-base font-semibold text-gray-900">Daftar Isi</h2>
-              <ol className="mt-3 space-y-2 text-sm text-gray-700">
-                {customToc.map((item) => {
-                  const href = item.href || `#${item.id}`;
-                  const isExternal = Boolean(item.external);
-
-                  return (
-                    <li key={item.id}>
-                      <a
-                        href={href}
-                        target={isExternal ? "_blank" : undefined}
-                        rel={isExternal ? "noopener noreferrer" : undefined}
-                        className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
-                      >
-                        {item.title}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ol>
-            </nav>
-          ) : null}
-
-          {!primaryContentHeading ? (
-            <div id={primaryAnchorId} className="h-0" aria-hidden="true" />
-          ) : null}
-
-          <section
-            id="area-layanan"
-            className="bg-gray-50 border border-gray-200 rounded-2xl p-4 md:p-5 space-y-2"
-          >
-            <h2 className="text-lg font-semibold text-gray-900">Area Layanan</h2>
-            <p className="text-gray-700 leading-relaxed">
-              Indri Teknik Las siap melayani kawasan {blogLocation.title} dan
-              sekitarnya dengan tim yang berpengalaman, mulai dari survei lokasi
-              hingga pemasangan rapi sesuai permintaan Anda.
-            </p>
-          </section>
-
-          <div>
-            <ServiceBlocksRenderer content={contentWithAnchors} />
-          </div>
-        </article>
-
-        {customToc.length ? (
-          <aside className="hidden lg:block lg:sticky lg:top-24 self-start">
-            <div className="bg-white border border-gray-200 p-5 rounded-2xl space-y-3">
-              <h2 className="text-lg font-semibold text-gray-900">Daftar Isi</h2>
-              <nav aria-label="Daftar isi artikel">
-                <ol className="space-y-2 text-sm text-gray-700">
+            {customToc.length ? (
+              <nav
+                className="mt-4 lg:hidden bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+                aria-label="Daftar isi artikel"
+              >
+                <h2 className="text-base font-semibold text-gray-900">Daftar Isi</h2>
+                <ol className="mt-3 space-y-2 text-sm text-gray-700">
                   {customToc.map((item) => {
                     const href = item.href || `#${item.id}`;
                     const isExternal = Boolean(item.external);
 
                     return (
-                    <li key={item.id}>
-                      <a
-                        href={href}
-                        target={isExternal ? "_blank" : undefined}
-                        rel={isExternal ? "noopener noreferrer" : undefined}
-                        className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
-                      >
-                        {item.title}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ol>
+                      <li key={item.id}>
+                        <a
+                          href={href}
+                          target={isExternal ? "_blank" : undefined}
+                          rel={isExternal ? "noopener noreferrer" : undefined}
+                          className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
+                        >
+                          {item.title}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ol>
               </nav>
+            ) : null}
+
+            {!primaryContentHeading ? (
+              <div id={primaryAnchorId} className="h-0" aria-hidden="true" />
+            ) : null}
+
+            <section
+              id="area-layanan"
+              className="bg-gray-50 border border-gray-200 rounded-2xl p-4 md:p-5 space-y-2"
+            >
+              <h2 className="text-lg font-semibold text-gray-900">Area Layanan</h2>
+              <p className="text-gray-700 leading-relaxed">
+                Indri Teknik Las siap melayani kawasan {areaName} dan sekitarnya
+                dengan tim yang berpengalaman, mulai dari survei lokasi hingga
+                pemasangan rapi sesuai permintaan Anda.
+              </p>
+            </section>
+
+            <div>
+              <ServiceBlocksRenderer content={contentWithAnchors} />
             </div>
-          </aside>
-        ) : null}
+          </article>
+
+          {customToc.length ? (
+            <aside className="hidden lg:block lg:sticky lg:top-24 self-start">
+              <div className="bg-white border border-gray-200 p-5 rounded-2xl space-y-3">
+                <h2 className="text-lg font-semibold text-gray-900">Daftar Isi</h2>
+                <nav aria-label="Daftar isi artikel">
+                  <ol className="space-y-2 text-sm text-gray-700">
+                    {customToc.map((item) => {
+                      const href = item.href || `#${item.id}`;
+                      const isExternal = Boolean(item.external);
+
+                      return (
+                        <li key={item.id}>
+                          <a
+                            href={href}
+                            target={isExternal ? "_blank" : undefined}
+                            rel={isExternal ? "noopener noreferrer" : undefined}
+                            className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
+                          >
+                            {item.title}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </nav>
+              </div>
+            </aside>
+          ) : null}
         </div>
 
         <section aria-labelledby="layanan-terkait">
@@ -506,17 +540,15 @@ export default async function BlogDetail({
               const listNodes = (service.description ?? [])
                 .filter((b) => b.type === "list")
                 .slice(1, 2);
+
               const listItems = listNodes
                 .flatMap((node) =>
-                  (node.children ?? []).map((child) =>
-                    extractPlainText(child.children)
-                  )
+                  (node.children ?? []).map((child) => extractPlainText(child.children))
                 )
                 .filter(Boolean);
-              const summary = toMetaDescription(
-                getFirstParagraphText(service.description),
-                150
-              );
+
+              const summary = toMetaDescription(getFirstParagraphText(service.description), 150);
+
               const serviceHref = service.slug
                 ? `/blog/${blogLocation.slug}/${service.slug}`
                 : "/jasa-las";
@@ -533,11 +565,11 @@ export default async function BlogDetail({
                       </Link>
                     </h3>
                   </header>
+
                   {summary ? (
-                    <p className="text-gray-700 mt-2 leading-relaxed">
-                      {summary}
-                    </p>
+                    <p className="text-gray-700 mt-2 leading-relaxed">{summary}</p>
                   ) : null}
+
                   {listItems.length ? (
                     <ul className="mt-3 space-y-2 text-gray-700 list-disc list-inside">
                       {listItems.map((item, index) => (
@@ -545,6 +577,7 @@ export default async function BlogDetail({
                       ))}
                     </ul>
                   ) : null}
+
                   <div className="mt-3">
                     <Link
                       href={serviceHref}
@@ -561,10 +594,7 @@ export default async function BlogDetail({
 
         <section aria-labelledby="jenis-besi">
           <header className="text-center mb-8">
-            <h2
-              id="jenis-besi"
-              className="text-3xl font-bold mb-3 text-gray-800"
-            >
+            <h2 id="jenis-besi" className="text-3xl font-bold mb-3 text-gray-800">
               Jenis-jenis Besi Berkualitas dari Indri Teknik Las
             </h2>
             <p className="text-gray-700 max-w-3xl mx-auto">
@@ -575,7 +605,6 @@ export default async function BlogDetail({
           </header>
 
           <div className="space-y-8">
-            {/* Besi Hollow */}
             <article className="pb-6 border-b border-gray-200 last:border-b-0">
               <h3 className="text-xl font-semibold mb-2 text-gray-900">
                 Besi Hollow Galvalume
@@ -583,9 +612,9 @@ export default async function BlogDetail({
               <p className="text-gray-700">
                 Hollow galvalume adalah besi hollow galvanis dengan lapisan
                 aluminium-zinc yang <strong>tahan karat</strong>,{" "}
-                <strong>tahan cuaca</strong>, dan{" "}
-                <strong>mudah perawatan</strong>. Material ini ringan namun
-                tetap kuat, cocok untuk desain modern dengan garis rapi.
+                <strong>tahan cuaca</strong>, dan <strong>mudah perawatan</strong>.
+                Material ini ringan namun tetap kuat, cocok untuk desain modern dengan
+                garis rapi.
               </p>
               <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
                 <li>Rangka kanopi dan atap ringan</li>
@@ -594,17 +623,13 @@ export default async function BlogDetail({
               </ul>
             </article>
 
-            {/* Besi Vial */}
             <article className="pb-6 border-b border-gray-200 last:border-b-0">
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">
-                Besi Vial
-              </h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Besi Vial</h3>
               <p className="text-gray-700">
-                Besi vial menggunakan batang besi solid dengan susunan vertikal
-                yang rapi. Karakternya <strong>kokoh</strong>,{" "}
+                Besi vial menggunakan batang besi solid dengan susunan vertikal yang
+                rapi. Karakternya <strong>kokoh</strong>,{" "}
                 <strong>tidak mudah bengkok</strong>, dan memberi{" "}
-                <strong>keamanan tinggi</strong> tanpa mengurangi tampilan
-                elegan.
+                <strong>keamanan tinggi</strong> tanpa mengurangi tampilan elegan.
               </p>
               <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
                 <li>Pagar rumah dan gerbang utama</li>
@@ -613,16 +638,15 @@ export default async function BlogDetail({
               </ul>
             </article>
 
-            {/* Besi Galvanis */}
             <article className="pb-6 border-b border-gray-200 last:border-b-0">
               <h3 className="text-xl font-semibold mb-2 text-gray-900">
                 Besi Galvanis
               </h3>
               <p className="text-gray-700">
                 Besi galvanis menggunakan plat dengan lapisan pelindung sehingga{" "}
-                <strong>tahan korosi</strong> dan stabil di cuaca ekstrem.
-                Material ini cocok untuk tampilan pagar tertutup yang rapi dan
-                privasi yang lebih baik.
+                <strong>tahan korosi</strong> dan stabil di cuaca ekstrem. Material
+                ini cocok untuk tampilan pagar tertutup yang rapi dan privasi yang
+                lebih baik.
               </p>
               <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
                 <li>Pagar tertutup dan panel pelindung</li>
@@ -631,14 +655,12 @@ export default async function BlogDetail({
               </ul>
             </article>
 
-            {/* BRC */}
             <article className="pb-6 border-b border-gray-200 last:border-b-0">
               <h3 className="text-xl font-semibold mb-2 text-gray-900">BRC</h3>
               <p className="text-gray-700">
-                BRC adalah wiremesh dengan las otomatis sehingga ukuran grid
-                rapi dan konsisten. Ujung roll top menambah{" "}
-                <strong>keamanan</strong> dan <strong>kekuatan</strong>, sekaligus
-                mempercepat pemasangan di lapangan.
+                BRC adalah wiremesh dengan las otomatis sehingga ukuran grid rapi dan
+                konsisten. Ujung roll top menambah <strong>keamanan</strong> dan{" "}
+                <strong>kekuatan</strong>, sekaligus mempercepat pemasangan di lapangan.
               </p>
               <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
                 <li>Perumahan, sekolah, dan fasilitas publik</li>
@@ -647,15 +669,11 @@ export default async function BlogDetail({
               </ul>
             </article>
 
-            {/* Lain-lain */}
             <article className="pb-6 border-b border-gray-200 last:border-b-0">
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">
-                Lain-lain
-              </h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Lain-lain</h3>
               <p className="text-gray-700">
-                Untuk proyek khusus, kami juga menangani material lain sesuai
-                kebutuhan desain, ukuran, dan tingkat keamanan yang Anda
-                butuhkan.
+                Untuk proyek khusus, kami juga menangani material lain sesuai kebutuhan
+                desain, ukuran, dan tingkat keamanan yang Anda butuhkan.
               </p>
               <ul className="mt-3 list-disc list-inside text-gray-700 space-y-1">
                 <li>Besi siku, UNP, CNP, dan plat sesuai spesifikasi</li>
@@ -677,7 +695,7 @@ export default async function BlogDetail({
               </p>
             </div>
             <a
-              href="https://wa.me/6281283993386"
+              href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Konsultasi via WhatsApp"
@@ -689,9 +707,8 @@ export default async function BlogDetail({
         </section>
 
         <footer aria-label="Bagikan artikel">
-          <SocialShare
-            url={typeof window !== "undefined" ? window.location.href : ""}
-          />
+          {/* ✅ SEO/UX: pakai canonicalUrl sebagai URL share (tanpa mengubah konten halaman) */}
+          <SocialShare url={canonicalUrl} />
         </footer>
       </main>
     </div>

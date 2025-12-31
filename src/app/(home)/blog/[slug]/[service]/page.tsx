@@ -1,7 +1,6 @@
 // app/blog/[slug]/[service]/page.tsx
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
+export const revalidate = 3600;
+
 import ServiceBlocksRenderer from "@/components/ServiceBlocksRenderer";
 import StepToOrder from "@/components/StepToOrder";
 import { Testimonial } from "@/components/Testimonial";
@@ -14,15 +13,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { getServiceLocationBySlug } from "@/lib/strapi/service-location/service-location.service";
-import {
-  getAllServices,
-  getServiceBySlug,
-} from "@/lib/strapi/service/service.service";
+import { getAllServices, getServiceBySlug } from "@/lib/strapi/service/service.service";
 import { formatDate } from "@/lib/utils";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Script from "next/script";
+
+const SITE_URL = "https://www.bengkellasindriteknik.com";
+const WHATSAPP_URL = "https://wa.me/6281283993386";
 
 type RichTextNode = {
   type?: string;
@@ -30,6 +30,16 @@ type RichTextNode = {
   text?: string;
   children?: RichTextNode[];
 };
+
+function getAreaNameFromTitle(title: string) {
+  const t = (title || "").trim();
+  if (!t) return "";
+  const beforeDash = t.split(" - ")[0].trim();
+  return beforeDash
+    .replace(/^Jasa\s+/i, "")
+    .replace(/^Bengkel\s+Las\s+/i, "")
+    .trim() || beforeDash || t;
+}
 
 function extractPlainText(nodes?: RichTextNode[]): string {
   if (!nodes) return "";
@@ -44,11 +54,18 @@ function extractPlainText(nodes?: RichTextNode[]): string {
   return parts.join(" ").replace(/\s+/g, " ").trim();
 }
 
+function getFirstParagraphText(nodes?: RichTextNode[]): string {
+  if (!nodes) return "";
+  const p = nodes.find((n) => n.type === "paragraph");
+  return p ? extractPlainText([p]) : "";
+}
+
 function toMetaDescription(text: string, max = 160) {
   if (!text) return "";
-  if (text.length <= max) return text;
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  if (cleaned.length <= max) return cleaned;
   const safeMax = Math.max(0, max - 3);
-  return `${text.slice(0, safeMax).trim()}...`;
+  return `${cleaned.slice(0, safeMax).trim()}...`;
 }
 
 function extractListItems(listNodes: RichTextNode[]): string[] {
@@ -69,60 +86,51 @@ export async function generateMetadata({
   params: Promise<{ slug: string; service: string }>;
 }): Promise<Metadata> {
   const { slug, service: serviceSlug } = await params;
+
   const [service, location] = await Promise.all([
     getServiceBySlug(serviceSlug),
     getServiceLocationBySlug(slug),
   ]);
 
-  if (!service) {
-    return { title: "Layanan Tidak Ditemukan" };
-  }
+  if (!service) return { title: "Layanan Tidak Ditemukan" };
 
-  const areaName = location?.title;
-  const descriptionText = extractPlainText(service.description);
-  const metaDescription = toMetaDescription(
-    descriptionText ||
-      service.meta_description ||
-      service.short_description ||
-      `Bengkel Las ${service.title}${
-        areaName ? ` di ${areaName}` : ""
-      } membantu kebutuhan las dan konstruksi ringan sesuai kebutuhan proyek Anda.`
-  );
+  const areaName = getAreaNameFromTitle(location?.title || slug);
+  const canonicalUrl = `${SITE_URL}/blog/${slug}/${service.slug}`;
+
   const thumbnailUrl = service.thumbnail?.url
     ? process.env.STRAPI_URL + service.thumbnail.url
     : undefined;
-  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${slug}/${service.slug}`;
-  const metaTitle =
-    service.meta_title ||
-    `Bengkel Las ${service.title}${areaName ? ` di ${areaName}` : ""}`;
+
+  const descFromContent =
+    getFirstParagraphText(service.description) || extractPlainText(service.description);
+
+  const metaDescription = toMetaDescription(
+    service.meta_description ||
+      service.short_description ||
+      descFromContent ||
+      `Jasa ${service.title} di ${areaName} Bekasi. Pengerjaan rapi & kuat. Konsultasi dan estimasi via WhatsApp.`
+  );
+
+const metaTitle =
+  service.meta_title ||
+  `Bengkel Las ${service.title} di ${areaName} Bekasi | Indri Teknik Las`;
+
 
   return {
-    title: {
-      default: metaTitle,
-      template: "%s - las terdekat",
-    },
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    robots:
-      "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+    title: metaTitle,
+    alternates: { canonical: canonicalUrl },
     description: metaDescription,
+    robots: "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       title: metaTitle,
       description: metaDescription,
-      type: "article",
-      locale: "id",
       url: canonicalUrl,
       siteName: "Bengkel Las Indri Teknik",
+      locale: "id",
+      type: "article",
       images: thumbnailUrl
-        ? [
-            {
-              url: thumbnailUrl,
-              width: 1200,
-              height: 630,
-              alt: service.title,
-            },
-          ]
+        ? [{ url: thumbnailUrl, width: 1200, height: 630, alt: metaTitle }]
         : undefined,
     },
     twitter: {
@@ -131,97 +139,142 @@ export async function generateMetadata({
       description: metaDescription,
       images: thumbnailUrl ? [thumbnailUrl] : undefined,
     },
-    metadataBase: new URL("https://bengkellasindriteknik.com"),
   };
 }
 
-export default async function BlogServiceDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string; service: string }>;
 }) {
   const { slug, service: serviceSlug } = await params;
+
   const [service, location] = await Promise.all([
     getServiceBySlug(serviceSlug),
     getServiceLocationBySlug(slug),
   ]);
 
   if (!service) notFound();
+
+  const areaName = getAreaNameFromTitle(location?.title || slug);
+  const canonicalUrl = `${SITE_URL}/blog/${slug}/${service.slug}`;
+
   const allServices = await getAllServices();
+  const relatedServices = (allServices || []).filter(
+    (item: any) => item?.slug && item.slug !== service.slug
+  );
 
   const descriptionBlocks: RichTextNode[] = service.description || [];
   const listBlocks = descriptionBlocks.filter((b) => b.type === "list");
-  const list = listBlocks.slice(0, 1);
-  const heading2 = descriptionBlocks
-    .filter((b) => b.type === "heading" && b.level === 2)
-    .slice(0, 1);
+  const listItems = extractListItems(listBlocks);
+
   const openingParagraph = descriptionBlocks
     .filter((b) => b.type === "paragraph")
     .slice(0, 2);
+
   const detailBlocks = descriptionBlocks.filter(
-    (block) =>
-      !openingParagraph.includes(block) &&
-      !heading2.includes(block) &&
-      !list.includes(block)
+    (block) => !openingParagraph.includes(block)
   );
-  const fallbackIntro = `Layanan ${service.title} dari Indri Teknik Las untuk area ${location?.title ?? slug} dirancang untuk membantu kebutuhan konstruksi ringan dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
+
   const thumbnailUrl = service.thumbnail?.url
     ? process.env.STRAPI_URL + service.thumbnail.url
     : null;
-  const listItems = extractListItems(listBlocks);
-  const summaryText = toMetaDescription(
-    extractPlainText(descriptionBlocks) ||
-      service.short_description ||
-      fallbackIntro,
-    220
-  );
-  const headerDescription = service.short_description || summaryText;
-  const publishedDate = service.createdAt ? new Date(service.createdAt) : null;
-  const updatedDate = service.updatedAt ? new Date(service.updatedAt) : null;
-  const relatedServices = (allServices || []).filter(
-    (item) => item?.slug && item.slug !== service.slug
-  );
 
-  const canonicalUrl = `https://bengkellasindriteknik.com/blog/${slug}/${service.slug}`;
-  const jsonLdDescription =
-    extractPlainText(descriptionBlocks) ||
-    service.meta_description ||
-    service.short_description ||
-    fallbackIntro;
-  const jsonLd = {
+  const fallbackIntro = `Layanan ${service.title} untuk area ${areaName} Bekasi dengan hasil rapi, kuat, dan sesuai kebutuhan proyek Anda.`;
+
+  const faqItems = [
+    {
+      q: `Berapa harga jasa ${service.title} di ${areaName}?`,
+      a: `Harga tergantung ukuran, material, dan desain. Kirim detail via WhatsApp untuk estimasi cepat.`,
+    },
+    {
+      q: `Apakah bisa survey lokasi di ${areaName}?`,
+      a: `Bisa. Tim kami dapat survey area ${areaName} dan sekitarnya untuk ukur lokasi dan estimasi.`,
+    },
+    {
+      q: `Berapa lama pengerjaan ${service.title}?`,
+      a: `Durasi tergantung ukuran & tingkat kesulitan. Setelah survey/brief, kami berikan timeline pengerjaan.`,
+    },
+  ];
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: areaName, item: `${SITE_URL}/blog/${slug}` },
+      { "@type": "ListItem", position: 4, name: service.title, item: canonicalUrl },
+    ],
+  };
+
+  const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: service.title,
-    description: jsonLdDescription,
-    image: thumbnailUrl || "https://bengkellasindriteknik.com/opengraph-image.png",
+name: `Bengkel Las ${service.title} di ${areaName} Bekasi`,
+    serviceType: service.title,
+    url: canonicalUrl,
+    description:
+      service.meta_description ||
+      service.short_description ||
+      getFirstParagraphText(descriptionBlocks) ||
+      extractPlainText(descriptionBlocks) ||
+      fallbackIntro,
+    image: thumbnailUrl || `${SITE_URL}/opengraph-image.png`,
     provider: {
       "@type": "LocalBusiness",
       name: "Indri Teknik Las",
-      image: "https://bengkellasindriteknik.com/opengraph-image.png",
+      url: SITE_URL,
+      telephone: "+6281283993386",
       address: {
         "@type": "PostalAddress",
         streetAddress: "Pekayon Jaya RT/RW. 003/004 Bekasi Selatan",
         addressLocality: "Bekasi",
         addressRegion: "Jawa Barat",
         postalCode: "17148",
-        addressCountry: "Indonesia",
+        addressCountry: "ID",
       },
-      telephone: "+6281283993386",
-      priceRange: "Rp. 550.000",
+      areaServed: [{ "@type": "AdministrativeArea", name: areaName }],
     },
-    url: canonicalUrl,
     offers: {
       "@type": "Offer",
-      price: "550.000",
       priceCurrency: "IDR",
       availability: "https://schema.org/InStock",
+      url: canonicalUrl,
     },
-    datePublished: service.createdAt,
-    dateModified: service.updatedAt,
   };
+
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
+const pageH1 = `Bengkel Las ${service.title} di ${areaName} Bekasi`;
+
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script
+        id="service-breadcrumb-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <Script
+        id="service-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
+      />
+      <Script
+        id="faq-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
+
       <header className="bg-transparent">
         <div className="page-container pt-6">
           <nav aria-label="Breadcrumb">
@@ -241,9 +294,7 @@ export default async function BlogServiceDetailPage({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href={`/blog/${slug}`}>
-                      {location?.title || slug}
-                    </Link>
+                    <Link href={`/blog/${slug}`}>{areaName}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -256,14 +307,44 @@ export default async function BlogServiceDetailPage({
         </div>
 
         <div className="page-container pb-6 text-center">
-          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 mt-2 mx-auto max-w-4xl">
-            {service.title}
-          </h1>
-          {headerDescription ? (
-            <p className="text-slate-600 mt-3 mx-auto max-w-3xl">
-              {headerDescription}
-            </p>
-          ) : null}
+         <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mt-2 mx-auto max-w-4xl px-2 leading-tight tracking-tight">
+            {pageH1}
+        </h1>
+          <p className="text-slate-600 mt-3 mx-auto max-w-3xl">
+            {service.short_description ||
+              toMetaDescription(
+                getFirstParagraphText(descriptionBlocks) ||
+                  extractPlainText(descriptionBlocks) ||
+                  fallbackIntro,
+                220
+              )}
+          </p>
+
+      {/* CTA */}
+<div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 px-4 sm:px-0">
+  <a
+    href={WHATSAPP_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-green-500 px-5 py-3 sm:py-2 text-sm font-semibold text-black hover:bg-green-600 transition"
+  >
+    Konsultasi WhatsApp
+  </a>
+
+  <Link
+    href={`/blog/${slug}`}
+    className="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-white px-5 py-3 sm:py-2 text-sm font-semibold text-slate-900 border border-slate-200 hover:bg-slate-50 transition"
+  >
+    Lihat Bengkel Las {areaName}
+  </Link>
+
+  <a
+    href="#detail-layanan"
+    className="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-white px-5 py-3 sm:py-2 text-sm font-semibold text-slate-900 border border-slate-200 hover:bg-slate-50 transition"
+  >
+    Detail Layanan
+  </a>
+</div>
         </div>
       </header>
 
@@ -271,58 +352,43 @@ export default async function BlogServiceDetailPage({
         <div className="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-8">
           <article className="overflow-hidden">
             <div className="py-2 md:py-4 space-y-8">
-              <header className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                  {publishedDate ? (
-                    <time dateTime={publishedDate.toISOString()}>
-                      {formatDate(service.createdAt)}
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                {service.createdAt ? (
+                  <time dateTime={new Date(service.createdAt).toISOString()}>
+                    {formatDate(service.createdAt)}
+                  </time>
+                ) : null}
+                <span className="h-1 w-1 bg-slate-300" aria-hidden="true" />
+                <span>Indri Teknik Las Team</span>
+                {service.updatedAt ? (
+                  <>
+                    <span className="h-1 w-1 bg-slate-300" aria-hidden="true" />
+                    <time dateTime={new Date(service.updatedAt).toISOString()}>
+                      Diperbarui {formatDate(service.updatedAt)}
                     </time>
-                  ) : null}
-                  <span
-                    className="h-1 w-1 bg-slate-300"
-                    aria-hidden="true"
-                  />
-                  <span>Indri Teknik Las Team</span>
-                  {updatedDate ? (
-                    <>
-                      <span
-                        className="h-1 w-1 bg-slate-300"
-                        aria-hidden="true"
-                      />
-                      <time dateTime={updatedDate.toISOString()}>
-                        Diperbarui {formatDate(service.updatedAt)}
-                      </time>
-                    </>
-                  ) : null}
-                  <span
-                    className="h-1 w-1 bg-slate-300"
-                    aria-hidden="true"
-                  />
-                  <span>Waktu Membaca 3 Menit</span>
-                </div>
-              </header>
+                  </>
+                ) : null}
+              </div>
 
-              <figure className="overflow-hidden bg-gray-100">
+              <figure className="overflow-hidden bg-gray-100 rounded-2xl">
                 {thumbnailUrl ? (
                   <Image
                     src={thumbnailUrl}
-                    alt={service.title}
+              alt={`Bengkel Las ${service.title} di ${areaName} Bekasi`}
                     width={960}
                     height={640}
                     className="h-72 w-full object-cover md:h-96"
                     loading="eager"
+                    priority
                   />
                 ) : (
                   <div className="h-72 w-full bg-gray-200 md:h-96" />
                 )}
-                <figcaption className="sr-only">{service.title}</figcaption>
+                <figcaption className="sr-only">{pageH1}</figcaption>
               </figure>
 
               <section className="space-y-3" aria-labelledby="ringkasan-layanan">
-                <h2
-                  id="ringkasan-layanan"
-                  className="text-2xl font-semibold text-slate-900"
-                >
+                <h2 id="ringkasan-layanan" className="text-2xl font-semibold text-slate-900">
                   Ringkasan Layanan
                 </h2>
                 <div className="space-y-4 text-slate-700 leading-relaxed">
@@ -334,103 +400,82 @@ export default async function BlogServiceDetailPage({
                 </div>
               </section>
 
-              {detailBlocks.length ? (
-                <section className="space-y-3" aria-labelledby="detail-layanan">
-                  <h2
-                    id="detail-layanan"
-                    className="text-2xl font-semibold text-slate-900"
-                  >
-                    Detail Layanan {service.title}
-                  </h2>
-                  <div className="space-y-4 text-slate-700 leading-relaxed">
+              <section className="space-y-3" aria-labelledby="detail-layanan">
+                <h2 id="detail-layanan" className="text-2xl font-semibold text-slate-900">
+                  Detail Layanan {service.title} di {areaName}
+                </h2>
+                <div className="space-y-4 text-slate-700 leading-relaxed">
+                  {detailBlocks.length ? (
                     <ServiceBlocksRenderer content={detailBlocks} />
-                  </div>
-                </section>
-              ) : null}
+                  ) : (
+                    <p>{fallbackIntro}</p>
+                  )}
+                </div>
+              </section>
 
-              <section
-                className="space-y-4"
-                aria-labelledby="keunggulan-layanan"
-              >
-                <h2
-                  id="keunggulan-layanan"
-                  className="text-2xl font-semibold text-slate-900"
-                >
+              <section className="space-y-4" aria-labelledby="keunggulan-layanan">
+                <h2 id="keunggulan-layanan" className="text-2xl font-semibold text-slate-900">
                   Keunggulan Layanan {service.title}
                 </h2>
+
                 {listItems.length ? (
                   <ul className="grid sm:grid-cols-2 gap-3">
-                    {listItems.map((item, index) => (
-                      <li
-                        key={`${item}-${index}`}
-                        className="flex gap-3 text-sm text-slate-700"
-                      >
-                        <span
-                          className="mt-2 h-1.5 w-1.5 bg-amber-500 shrink-0"
-                          aria-hidden="true"
-                        />
+                    {listItems.map((item, idx) => (
+                      <li key={`${item}-${idx}`} className="flex gap-3 text-sm text-slate-700">
+                        <span className="mt-2 h-1.5 w-1.5 bg-amber-500 shrink-0" aria-hidden="true" />
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
-                ) : list.length ? (
-                  <div className="text-slate-700 leading-relaxed">
-                    <ServiceBlocksRenderer content={list} />
-                  </div>
                 ) : (
                   <p className="text-slate-700 leading-relaxed">
-                    Konsultasikan kebutuhan Anda untuk mendapatkan rekomendasi
-                    desain, material, dan estimasi pengerjaan yang sesuai.
+                    Konsultasikan kebutuhan Anda untuk rekomendasi desain, material, dan estimasi pengerjaan.
                   </p>
                 )}
               </section>
 
-              <section className="bg-amber-50/60 p-5">
-                <h3 className="text-lg font-semibold text-[#171717]">
-                  Butuh Estimasi Biaya?
-                </h3>
-                <p className="text-sm text-slate-600 mt-2">
-                  Kirim detail ukuran dan desain yang Anda inginkan, tim kami
-                  siap memberikan estimasi cepat dan rekomendasi material terbaik.
-                </p>
-                <a
-                  href="https://wa.me/6281283993386"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-green-500 px-5 py-2 text-sm font-semibold text-black hover:bg-green-600 transition"
-                >
-                  Konsultasi via WhatsApp
-                </a>
+              <section className="space-y-3" aria-labelledby="faq">
+                <h2 id="faq" className="text-2xl font-semibold text-slate-900">
+                  FAQ {service.title} di {areaName}
+                </h2>
+                <div className="space-y-3">
+                  {faqItems.map((f) => (
+                    <details key={f.q} className="bg-white border border-slate-200 rounded-2xl p-4">
+                      <summary className="cursor-pointer font-semibold text-slate-900">
+                        {f.q}
+                      </summary>
+                      <p className="mt-2 text-slate-700 leading-relaxed">{f.a}</p>
+                    </details>
+                  ))}
+                </div>
               </section>
             </div>
           </article>
 
           <aside className="space-y-6 lg:sticky lg:top-6 self-start">
-            <section className="p-0">
-              <h3 className="text-lg font-semibold text-slate-900">
-                Konsultasi Cepat
-              </h3>
+            <section className="bg-white border border-slate-200 rounded-2xl p-5">
+              <h3 className="text-lg font-semibold text-slate-900">Konsultasi Cepat</h3>
               <p className="text-sm text-slate-600 mt-2">
-                Konsultasi gratis untuk menentukan material, ukuran, dan desain
-                yang sesuai kebutuhan Anda.
+                Konsultasi gratis untuk area {areaName}. Kirim ukuran & desain untuk estimasi cepat.
               </p>
               <a
-                href="https://wa.me/6281283993386"
+                href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-black hover:bg-green-600 transition"
               >
                 Hubungi via WhatsApp
               </a>
+              <p className="mt-3 text-xs text-slate-500 break-all">
+                Canonical: {canonicalUrl}
+              </p>
             </section>
 
-            <section className="p-0">
-              <h3 className="text-lg font-semibold text-slate-900">
-                Daftar Layanan
-              </h3>
-              {relatedServices.length ? (
+            <section className="bg-white border border-slate-200 rounded-2xl p-5">
+              <h3 className="text-lg font-semibold text-slate-900">Layanan Lain</h3>
+              {relatedServices?.length ? (
                 <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-700">
-                  {relatedServices.map((item) => (
+                  {relatedServices.slice(0, 16).map((item: any) => (
                     <Link
                       key={item.id || item.slug}
                       href={`/blog/${slug}/${item.slug}`}
@@ -441,9 +486,7 @@ export default async function BlogServiceDetailPage({
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-slate-600">
-                  Daftar layanan akan segera diperbarui.
-                </p>
+                <p className="mt-3 text-sm text-slate-600">Daftar layanan akan segera diperbarui.</p>
               )}
             </section>
           </aside>
@@ -454,12 +497,6 @@ export default async function BlogServiceDetailPage({
           <Testimonial variant="clean" />
         </section>
       </main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
-      />
     </div>
   );
 }
