@@ -11,7 +11,8 @@ interface Props {
 function collectText(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(collectText).join(" ");
-  if (React.isValidElement(node)) return collectText(node.props.children);
+  if (React.isValidElement<{ children?: React.ReactNode }>(node))
+    return collectText(node.props.children);
   return "";
 }
 
@@ -46,7 +47,8 @@ export default function ServiceBlocksRenderer({ content }: Props) {
             const headingId =
               (rest as { anchorId?: string }).anchorId ||
               headingSlugger(collectText(children));
-            const tagName = `h${level || 2}` as keyof JSX.IntrinsicElements;
+            const tagName =
+              `h${level || 2}` as keyof React.JSX.IntrinsicElements;
 
             return React.createElement(
               tagName,
