@@ -376,11 +376,9 @@ export default async function BlogDetail({
                         href={href}
                         target={isExternal ? "_blank" : undefined}
                         rel={isExternal ? "noopener noreferrer" : undefined}
-                        className="group block hover:text-gray-900"
+                        className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
                       >
-                        <span className="group-hover:underline underline-offset-4">
-                          {item.title}
-                        </span>
+                        {item.title}
                       </a>
                     </li>
                   );
@@ -421,21 +419,19 @@ export default async function BlogDetail({
                     const isExternal = Boolean(item.external);
 
                     return (
-                      <li key={item.id}>
-                        <a
-                          href={href}
-                          target={isExternal ? "_blank" : undefined}
-                          rel={isExternal ? "noopener noreferrer" : undefined}
-                          className="group block hover:text-gray-900"
-                        >
-                          <span className="group-hover:underline underline-offset-4">
-                            {item.title}
-                          </span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ol>
+                    <li key={item.id}>
+                      <a
+                        href={href}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                        className="block text-blue-600 underline underline-offset-4 hover:text-blue-700"
+                      >
+                        {item.title}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
               </nav>
             </div>
           </aside>

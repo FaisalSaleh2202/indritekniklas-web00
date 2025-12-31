@@ -27,15 +27,15 @@ export default function NavigationMobileClient({ initialServices }: Props) {
   return (
     <>
       {/* Tombol Toggle Menu – VERSI SUPER SMOOTH */}
-      <div className="md:hidden fixed top-2 right-4 z-50">
+      <div className="md:hidden fixed top-0 right-4 z-50 h-14 flex items-center">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Buka/tutup menu navigasi"
-          className="relative p-3 
+          className="relative h-10 w-10 flex items-center justify-center
                transition-all duration-300 ease-in-out
-               hover:scale-110 hover:shadow-xl active:scale-95"
+               hover:scale-105 hover:shadow-md active:scale-95"
         >
-          <div className="relative w-7 h-7">
+          <div className="relative w-7 h-7 bottom-2">
             {/* Icon Menu */}
             <Menu
               className={`absolute inset-0 h-7 w-7 text-[#171717] transition-all duration-500 ease-in-out
@@ -69,10 +69,10 @@ export default function NavigationMobileClient({ initialServices }: Props) {
 
       {/* Panel Menu Mobile */}
       <aside
-        className={`fixed top-[56px] right-0 h-[calc(100vh-56px)] w-80 bg-white z-40 transform transition-transform duration-500 ease-in-out overflow-y-auto
+        className={`fixed right-0 top-11 h-[calc(100vh-56px)] w-80 bg-white z-40 shadow-xl border-l border-gray-200 transform transition-transform duration-500 ease-in-out overflow-y-auto
           ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <nav className="flex flex-col text-lg mt-6 mx-6 gap-1">
+        <nav className="flex flex-col text-lg pt-4 pb-6 mx-6 gap-1">
           {/* Beranda */}
           <Link
             href="/"

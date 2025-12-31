@@ -34,9 +34,9 @@ function createSlugger() {
 }
 
 export default function ServiceBlocksRenderer({ content }: Props) {
+  const headingSlugger = React.useMemo(() => createSlugger(), []);
   const blocks = Array.isArray(content) ? (content as BlocksContent) : null;
   if (!blocks?.length) return null;
-  const headingSlugger = React.useMemo(() => createSlugger(), []);
 
   return (
     <div className="prose prose-lg max-w-none">

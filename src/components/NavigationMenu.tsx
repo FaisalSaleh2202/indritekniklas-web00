@@ -17,7 +17,7 @@ export function NavigationMenu() {
           className="text-xl text-light flex items-center gap-3"
           aria-label="Indri Teknik Las - Beranda"
         >
-          <span className="whitespace-nowrap text-base md:text-xl font-semibold">
+          <span className="whitespace-nowrap text-base text-xl font-semibold">
             Indri Teknik Las
           </span>
         </Link>
