@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `https://bengkellasindriteknik.com`,
   },
+  icons: {
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+  },
   description:
     "Indri Teknik Las menyediakan layanan las profesional: pagar besi, kanopi, tralis, railing tangga, dan berbagai konstruksi besi. Harga terjangkau, kualitas terbaik.",
   keywords: [
