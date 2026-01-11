@@ -21,13 +21,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/blog`,
+      url: `${baseUrl}/tentang-kami`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/tentang-kami`,
+     {
+      url: `${baseUrl}/favicon.ico`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
